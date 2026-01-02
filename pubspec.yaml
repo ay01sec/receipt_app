@@ -45,3 +45,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # アセットの登録
+  assets:
+    - assets/fonts/
+    - assets/images/
+
+  # フォントの登録
+  fonts:
+    - family: NotoSansJP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
+          weight: 400
