@@ -46,7 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '865097920786',
     projectId: 'receipt20260102',
     authDomain: 'receipt20260102.firebaseapp.com',
-    storageBucket: 'receipt20260102.firebasestorage.app',
+    storageBucket: 'receipt20260102-production',
     measurementId: 'G-CEK9CQ6HL9',
   );
 
@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
     appId: '1:865097920786:android:018626fff7ad8ed32ec3cb',
     messagingSenderId: '865097920786',
     projectId: 'receipt20260102',
-    storageBucket: 'receipt20260102.firebasestorage.app',
+    storageBucket: 'receipt20260102-production',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
     appId: '1:865097920786:ios:ae44ff5f7eb60f512ec3cb',
     messagingSenderId: '865097920786',
     projectId: 'receipt20260102',
-    storageBucket: 'receipt20260102.firebasestorage.app',
+    storageBucket: 'receipt20260102-production',
     iosBundleId: 'com.example.receiptApp',
   );
 
@@ -72,7 +72,7 @@ class DefaultFirebaseOptions {
     appId: '1:865097920786:ios:ae44ff5f7eb60f512ec3cb',
     messagingSenderId: '865097920786',
     projectId: 'receipt20260102',
-    storageBucket: 'receipt20260102.firebasestorage.app',
+    storageBucket: 'receipt20260102-production',
     iosBundleId: 'com.example.receiptApp',
   );
 
@@ -82,7 +82,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '865097920786',
     projectId: 'receipt20260102',
     authDomain: 'receipt20260102.firebaseapp.com',
-    storageBucket: 'receipt20260102.firebasestorage.app',
+    storageBucket: 'receipt20260102-production',
     measurementId: 'G-M0TNXQTR31',
   );
 
