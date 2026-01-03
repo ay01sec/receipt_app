@@ -88,7 +88,7 @@ class ReceiptRepository {
       });
 
       // PDFをCloud Storageにアップロード
-      final pdfStoragePath = StoragePaths.receiptPdfPath(store.id, docRef.id);
+      final pdfStoragePath = StoragePaths.receiptPdfPath(store.userId, store.id, docRef.id);
       final storageRef = _storage.ref().child(pdfStoragePath);
       await storageRef.putData(pdfBytes);
       final pdfUrl = await storageRef.getDownloadURL();

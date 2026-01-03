@@ -71,12 +71,6 @@ class StoreRepository {
   }) async {
     try {
       final now = Timestamp.now();
-      String? stampImageUrl;
-
-      // 印鑑画像をアップロード
-      if (stampImagePath != null) {
-        stampImageUrl = await _uploadStampImage(userId, stampImagePath);
-      }
 
       // Firestoreに店舗情報を保存（サブコレクション構造）
       final docRef = await _firestore
@@ -89,7 +83,7 @@ class StoreRepository {
         'storeAddress1': storeAddress1,
         'storeAddress2': storeAddress2,
         'phoneNumber': phoneNumber,
-        'stampImageUrl': stampImageUrl,
+        'stampImageUrl': null,
         'invoiceNumber': invoiceNumber,
         'defaultMemo': defaultMemo,
         'receiptNumberPrefix': 'R-',
@@ -98,6 +92,15 @@ class StoreRepository {
         'createdAt': now,
         'updatedAt': now,
       });
+
+      // 印鑑画像をアップロード（店舗作成後）
+      if (stampImagePath != null) {
+        final stampImageUrl = await _uploadStampImage(userId, docRef.id, stampImagePath);
+        await docRef.update({
+          'stampImageUrl': stampImageUrl,
+          'updatedAt': Timestamp.now(),
+        });
+      }
 
       final doc = await docRef.get();
       return Store.fromFirestore(doc);
@@ -134,6 +137,7 @@ class StoreRepository {
       if (stampImagePath != null) {
         final stampImageUrl = await _uploadStampImage(
           userId,
+          storeId,
           stampImagePath,
         );
         updateData['stampImageUrl'] = stampImageUrl;
@@ -177,11 +181,11 @@ class StoreRepository {
   }
 
   /// 印鑑画像をCloud Storageにアップロード
-  Future<String> _uploadStampImage(String userId, String filePath) async {
+  Future<String> _uploadStampImage(String userId, String storeId, String filePath) async {
     try {
       final file = File(filePath);
       final storageRef = _storage.ref().child(
-            StoragePaths.stampImagePath(userId),
+            StoragePaths.stampImagePath(userId, storeId),
           );
 
       await storageRef.putFile(file);
@@ -193,10 +197,10 @@ class StoreRepository {
   }
 
   /// 印鑑画像を削除
-  Future<void> deleteStampImage(String userId) async {
+  Future<void> deleteStampImage(String userId, String storeId) async {
     try {
       final storageRef = _storage.ref().child(
-            StoragePaths.stampImagePath(userId),
+            StoragePaths.stampImagePath(userId, storeId),
           );
       await storageRef.delete();
     } catch (e) {
@@ -211,7 +215,7 @@ class StoreRepository {
   Future<void> deleteStore(String userId, String storeId) async {
     try {
       // 印鑑画像を削除
-      await deleteStampImage(userId);
+      await deleteStampImage(userId, storeId);
 
       // Firestoreから店舗情報を削除
       await _firestore

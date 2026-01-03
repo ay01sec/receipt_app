@@ -18,13 +18,13 @@ class StoragePaths {
   static const String stamps = 'stamps';
 
   /// 領収書PDFのパスを生成
-  static String receiptPdfPath(String storeId, String receiptId) {
-    return '$receipts/$storeId/$receiptId.pdf';
+  static String receiptPdfPath(String userId, String storeId, String receiptId) {
+    return '$receipts/$userId/$storeId/$receiptId.pdf';
   }
 
   /// 印鑑画像のパスを生成
-  static String stampImagePath(String storeId) {
-    return '$stamps/$storeId/stamp.png';
+  static String stampImagePath(String userId, String storeId) {
+    return '$stamps/$userId/$storeId/stamp.png';
   }
 }
 
