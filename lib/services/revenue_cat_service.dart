@@ -51,8 +51,8 @@ class RevenueCatService {
   /// [package] 購入するパッケージ
   static Future<CustomerInfo> purchase(Package package) async {
     try {
-      final purchaseResult = await Purchases.purchase(
-        PurchaseParams(package: package),
+      final purchaseResult = await Purchases.purchaseStoreProduct(
+        package.storeProduct,
       );
       return purchaseResult.customerInfo;
     } on PlatformException catch (e) {
