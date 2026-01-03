@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/receipt_provider.dart';
 import '../../services/qr_service.dart';
 import '../../utils/constants.dart';
@@ -99,6 +101,25 @@ class ReceiptDetailScreen extends ConsumerWidget {
                           '消費税（${receipt.taxRate.toStringAsFixed(0)}%）',
                           '¥${Formatters.formatAmount(receipt.taxAmount)}',
                         ),
+                        const Divider(),
+                        _buildInfoRow(
+                          'タイムスタンプ',
+                          '${receipt.createdAt.millisecondsSinceEpoch} ms',
+                        ),
+                        const Divider(),
+                        _buildCopyableInfoRow(
+                          'タイムスタンプ (日時)',
+                          '${receipt.createdAt.year}/${receipt.createdAt.month.toString().padLeft(2, '0')}/${receipt.createdAt.day.toString().padLeft(2, '0')} '
+                          '${receipt.createdAt.hour.toString().padLeft(2, '0')}:${receipt.createdAt.minute.toString().padLeft(2, '0')}:'
+                          '${receipt.createdAt.second.toString().padLeft(2, '0')}.${receipt.createdAt.millisecond.toString().padLeft(3, '0')}',
+                        ),
+                        if (receipt.pdfUrl != null) ...[
+                          const Divider(),
+                          _buildLinkInfoRow(
+                            'PDF URL',
+                            receipt.pdfUrl!,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -154,6 +175,94 @@ class ReceiptDetailScreen extends ConsumerWidget {
             child: Text(
               value,
               style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCopyableInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy, size: 18),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: value));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('コピーしました'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkInfoRow(String label, String url) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                final uri = Uri.parse(url);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+              child: Text(
+                url,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],

@@ -77,33 +77,59 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
       return;
     }
 
-    // 印鑑画像を取得
-    Uint8List? stampImageBytes;
-    if (store.stampImageUrl != null) {
-      try {
-        final response = await http.get(Uri.parse(store.stampImageUrl!));
-        if (response.statusCode == 200) {
-          stampImageBytes = response.bodyBytes;
-        }
-      } catch (e) {
-        // 印鑑画像の取得に失敗してもエラーにしない
-      }
-    }
-
-    final totalAmount = Validators.parseAmount(_totalAmountController.text)!;
-    final recipientName = _recipientNameController.text.trim();
-
-    final receiptController = ref.read(receiptControllerProvider.notifier);
-    final receipt = await receiptController.createReceipt(
-      store: store,
-      recipientName: recipientName.endsWith('様') ? recipientName : '$recipientName 様',
-      memo: _memoController.text.trim(),
-      totalAmount: totalAmount,
-      taxRate: _selectedTaxRate,
-      stampImageBytes: stampImageBytes,
+    // ローディングダイアログを表示
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('領収書を作成中...', style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
 
-    if (receipt != null && mounted) {
+    try {
+      // 印鑑画像を取得
+      Uint8List? stampImageBytes;
+      if (store.stampImageUrl != null) {
+        try {
+          final response = await http.get(Uri.parse(store.stampImageUrl!));
+          if (response.statusCode == 200) {
+            stampImageBytes = response.bodyBytes;
+          }
+        } catch (e) {
+          // 印鑑画像の取得に失敗してもエラーにしない
+        }
+      }
+
+      final totalAmount = Validators.parseAmount(_totalAmountController.text)!;
+      final recipientName = _recipientNameController.text.trim();
+
+      final receiptController = ref.read(receiptControllerProvider.notifier);
+      final receipt = await receiptController.createReceipt(
+        store: store,
+        recipientName: recipientName.endsWith('様') ? recipientName : '$recipientName 様',
+        memo: _memoController.text.trim(),
+        totalAmount: totalAmount,
+        taxRate: _selectedTaxRate,
+        stampImageBytes: stampImageBytes,
+      );
+
+      // ローディングダイアログを閉じる
+      if (mounted) Navigator.of(context).pop();
+
+      if (receipt != null && mounted) {
       // 成功ダイアログを表示
       showDialog(
         context: context,
@@ -142,12 +168,12 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
           ],
         ),
       );
-    } else if (mounted) {
-      // エラー表示
-      final error = ref.read(receiptControllerProvider).error;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
+      } else if (mounted) {
+        // エラー表示
+        final error = ref.read(receiptControllerProvider).error;
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
           title: const Row(
             children: [
               Icon(Icons.error, color: Colors.red),
@@ -170,7 +196,33 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
             ),
           ],
         ),
-      );
+        );
+      }
+    } catch (e) {
+      // エラーが発生した場合もローディングダイアログを閉じる
+      if (mounted) Navigator.of(context).pop();
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.error, color: Colors.red),
+                SizedBox(width: UIConstants.paddingSmall),
+                Text('エラー'),
+              ],
+            ),
+            content: Text('予期しないエラーが発生しました: $e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('閉じる'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
