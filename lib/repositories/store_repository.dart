@@ -12,6 +12,9 @@ class StoreRepository {
   /// ユーザーの店舗情報を取得
   Future<Store?> getStore(String userId) async {
     try {
+      print('🔵 StoreRepository: Fetching store for userId: $userId');
+      print('🔵 StoreRepository: Query path: users/$userId/stores');
+
       final querySnapshot = await _firestore
           .collection(FirestoreCollections.users)
           .doc(userId)
@@ -19,12 +22,18 @@ class StoreRepository {
           .limit(1)
           .get();
 
+      print('🔵 StoreRepository: Query completed, docs count: ${querySnapshot.docs.length}');
+
       if (querySnapshot.docs.isEmpty) {
+        print('🟡 StoreRepository: No store found for user');
         return null;
       }
 
-      return Store.fromFirestore(querySnapshot.docs.first);
+      final store = Store.fromFirestore(querySnapshot.docs.first);
+      print('🟢 StoreRepository: Store found - id: ${store.id}, name: ${store.storeName}');
+      return store;
     } catch (e) {
+      print('🔴 StoreRepository: Error fetching store: $e');
       throw Exception('店舗情報の取得に失敗しました: ${e.toString()}');
     }
   }

@@ -30,14 +30,22 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
   /// 店舗情報を読み込み
   Future<void> _loadStore() async {
     if (_userId == null) {
+      print('🔴 StoreController: userId is null, user not authenticated');
       state = const AsyncValue.data(null);
       return;
     }
 
+    print('🟢 StoreController: Loading store for userId: $_userId');
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return await _storeRepository.getStore(_userId);
+      final store = await _storeRepository.getStore(_userId);
+      print('🟢 StoreController: Store loaded: ${store?.id ?? "null"}');
+      return store;
     });
+
+    if (state.hasError) {
+      print('🔴 StoreController: Error loading store: ${state.error}');
+    }
   }
 
   /// 店舗情報を作成

@@ -16,7 +16,9 @@ final authStateProvider = StreamProvider<User?>((ref) {
 /// 現在のユーザーを取得するProvider
 final currentUserProvider = Provider<User?>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  return authRepository.currentUser;
+  final user = authRepository.currentUser;
+  print('🔵 currentUserProvider: user = ${user?.uid ?? "null"}');
+  return user;
 });
 
 /// 認証コントローラー（認証関連の操作を行う）
@@ -36,7 +38,13 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
         email: email,
         password: password,
       );
+      final user = _authRepository.currentUser;
+      print('🟢 AuthController: User signed in - uid: ${user?.uid}, email: ${user?.email}');
     });
+
+    if (state.hasError) {
+      print('🔴 AuthController: Sign in error: ${state.error}');
+    }
   }
 
   /// アカウント作成
