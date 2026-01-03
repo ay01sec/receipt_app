@@ -39,8 +39,7 @@ class ReceiptStatus {
 class RevenueCatConfig {
   /// RevenueCat Public API Key (iOS)
   /// 取得方法: RevenueCat Dashboard → Settings → API keys
-  /// TODO: ここにRevenueCatのAPIキーを貼り付けてください
-  static const String apiKey = 'YOUR_REVENUECAT_API_KEY_HERE';
+  static const String apiKey = 'appl_lbdAHRSrRakbAuSbozGRBXydGjR';
 
   /// Entitlement ID（権限ID）
   static const String entitlementId = 'premium';
