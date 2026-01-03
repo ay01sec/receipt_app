@@ -1,5 +1,5 @@
+import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import '../utils/constants.dart';
 
 /// RevenueCatサービス（サブスクリプション管理）
 class RevenueCatService {
@@ -51,7 +51,9 @@ class RevenueCatService {
   /// [package] 購入するパッケージ
   static Future<CustomerInfo> purchase(Package package) async {
     try {
-      final purchaseResult = await Purchases.purchasePackage(package);
+      final purchaseResult = await Purchases.purchase(
+        PurchaseParams(package: package),
+      );
       return purchaseResult.customerInfo;
     } on PlatformException catch (e) {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);

@@ -36,7 +36,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
 
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return await _storeRepository.getStore(_userId!);
+      return await _storeRepository.getStore(_userId);
     });
   }
 
@@ -57,7 +57,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       return await _storeRepository.createStore(
-        userId: _userId!,
+        userId: _userId,
         storeName: storeName,
         storeAddress1: storeAddress1,
         storeAddress2: storeAddress2,
@@ -108,7 +108,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
     }
 
     state = const AsyncValue.loading();
-    await _storeRepository.deleteStore(storeId, _userId!);
+    await _storeRepository.deleteStore(storeId, _userId);
     state = const AsyncValue.data(null);
   }
 

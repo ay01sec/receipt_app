@@ -36,7 +36,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     super.dispose();
   }
 
-  void _initializeForm(store) {
+  void _initializeForm(Store? store) {
     if (_isInitialized || store == null) return;
 
     _storeNameController.text = store.storeName;

@@ -1,5 +1,3 @@
-/// アプリ全体で使用する定数を定義
-
 // アプリ情報
 class AppConstants {
   static const String appName = '領収書アプリ';
