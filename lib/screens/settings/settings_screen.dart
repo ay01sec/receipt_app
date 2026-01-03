@@ -25,6 +25,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   String? _selectedImagePath;
   bool _isInitialized = false;
+  bool _emailNotificationEnabled = false;
 
   @override
   void dispose() {
@@ -46,6 +47,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _phoneController.text = store.phoneNumber;
     _invoiceNumberController.text = store.invoiceNumber;
     _defaultMemoController.text = store.defaultMemo;
+    _emailNotificationEnabled = store.emailNotificationEnabled;
 
     _isInitialized = true;
   }
@@ -95,6 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         invoiceNumber: _invoiceNumberController.text.trim(),
         defaultMemo: _defaultMemoController.text.trim(),
         stampImagePath: _selectedImagePath,
+        emailNotificationEnabled: _emailNotificationEnabled,
       );
     }
 
@@ -206,6 +209,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       labelText: '但し書きのデフォルト値',
                       prefixIcon: Icon(Icons.description),
                       hintText: '〇〇代として',
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.paddingLarge),
+
+                  // メール送信設定
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(UIConstants.paddingMedium),
+                      child: SwitchListTile(
+                        title: const Text(
+                          'PDF作成後のメール送信',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: const Text(
+                          'ONにすると、領収書PDF作成後に\nログイン用メールアドレス宛にPDFと詳細情報を送信します',
+                        ),
+                        value: _emailNotificationEnabled,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _emailNotificationEnabled = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: UIConstants.paddingLarge),

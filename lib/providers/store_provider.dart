@@ -87,6 +87,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
     String? invoiceNumber,
     String? defaultMemo,
     String? stampImagePath,
+    bool? emailNotificationEnabled,
   }) async {
     if (_userId == null) {
       throw Exception('ユーザーがログインしていません');
@@ -104,6 +105,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
         invoiceNumber: invoiceNumber,
         defaultMemo: defaultMemo,
         stampImagePath: stampImagePath,
+        emailNotificationEnabled: emailNotificationEnabled,
       );
     });
   }

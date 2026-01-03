@@ -129,10 +129,11 @@ class Validators {
     return null;
   }
 
-  /// 宛名のバリデーション
+  /// 宛名のバリデーション（空欄可）
   static String? validateRecipientName(String? value) {
+    // 空欄を許可
     if (value == null || value.isEmpty) {
-      return ErrorMessages.recipientNameRequired;
+      return null;
     }
 
     if (value.length > ValidationConstants.recipientNameMaxLength) {

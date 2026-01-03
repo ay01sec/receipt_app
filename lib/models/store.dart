@@ -14,6 +14,7 @@ class Store {
   final String receiptNumberPrefix; // 領収書番号の接頭辞（例: R-2026-）
   final int lastReceiptNumber; // 最後に発行した連番
   final int fiscalYearStart; // 会計年度開始月（1-12）
+  final bool emailNotificationEnabled; // PDF作成後のメール送信設定
   final DateTime createdAt; // 作成日時
   final DateTime updatedAt; // 更新日時
 
@@ -30,6 +31,7 @@ class Store {
     this.receiptNumberPrefix = 'R-',
     this.lastReceiptNumber = 0,
     this.fiscalYearStart = 1,
+    this.emailNotificationEnabled = false,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -50,6 +52,7 @@ class Store {
       receiptNumberPrefix: data['receiptNumberPrefix'] ?? 'R-',
       lastReceiptNumber: data['lastReceiptNumber'] ?? 0,
       fiscalYearStart: data['fiscalYearStart'] ?? 1,
+      emailNotificationEnabled: data['emailNotificationEnabled'] ?? false,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -69,6 +72,7 @@ class Store {
       'receiptNumberPrefix': receiptNumberPrefix,
       'lastReceiptNumber': lastReceiptNumber,
       'fiscalYearStart': fiscalYearStart,
+      'emailNotificationEnabled': emailNotificationEnabled,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -88,6 +92,7 @@ class Store {
     String? receiptNumberPrefix,
     int? lastReceiptNumber,
     int? fiscalYearStart,
+    bool? emailNotificationEnabled,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -104,6 +109,7 @@ class Store {
       receiptNumberPrefix: receiptNumberPrefix ?? this.receiptNumberPrefix,
       lastReceiptNumber: lastReceiptNumber ?? this.lastReceiptNumber,
       fiscalYearStart: fiscalYearStart ?? this.fiscalYearStart,
+      emailNotificationEnabled: emailNotificationEnabled ?? this.emailNotificationEnabled,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

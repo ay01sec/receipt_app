@@ -63,7 +63,7 @@ class PdfService {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(40),
+        margin: const pw.EdgeInsets.all(25),
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
@@ -97,20 +97,20 @@ class PdfService {
                 ),
               ],
             ),
-            pw.SizedBox(height: 25),
+            pw.SizedBox(height: 15),
 
             // 宛名
             pw.Text(
               '$recipientName',
               style: pw.TextStyle(font: font, fontSize: 16),
             ),
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 15),
 
             // 金額ボックス（大きく中央に）
             pw.Center(
               child: pw.Container(
                 width: 400,
-                padding: const pw.EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                padding: const pw.EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(width: 3),
                 ),
@@ -126,7 +126,7 @@ class PdfService {
                 ),
               ),
             ),
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 15),
 
             // 但し書き
             pw.Center(
@@ -135,7 +135,7 @@ class PdfService {
                 style: pw.TextStyle(font: font, fontSize: 14),
               ),
             ),
-            pw.SizedBox(height: 8),
+            pw.SizedBox(height: 5),
             pw.Center(
               child: pw.Text(
                 '上記、正に領収いたしました',
@@ -143,7 +143,7 @@ class PdfService {
               ),
             ),
 
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 15),
 
             // 下部：印紙枠（左）、内訳、店舗情報・印鑑（右）
             pw.Row(

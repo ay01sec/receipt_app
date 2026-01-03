@@ -68,6 +68,7 @@ class StoreRepository {
     required String invoiceNumber,
     required String defaultMemo,
     String? stampImagePath,
+    bool emailNotificationEnabled = false,
   }) async {
     try {
       final now = Timestamp.now();
@@ -89,6 +90,7 @@ class StoreRepository {
         'receiptNumberPrefix': 'R-',
         'lastReceiptNumber': 0,
         'fiscalYearStart': 1,
+        'emailNotificationEnabled': emailNotificationEnabled,
         'createdAt': now,
         'updatedAt': now,
       });
@@ -120,6 +122,7 @@ class StoreRepository {
     String? invoiceNumber,
     String? defaultMemo,
     String? stampImagePath,
+    bool? emailNotificationEnabled,
   }) async {
     try {
       final updateData = <String, dynamic>{
@@ -132,6 +135,7 @@ class StoreRepository {
       if (phoneNumber != null) updateData['phoneNumber'] = phoneNumber;
       if (invoiceNumber != null) updateData['invoiceNumber'] = invoiceNumber;
       if (defaultMemo != null) updateData['defaultMemo'] = defaultMemo;
+      if (emailNotificationEnabled != null) updateData['emailNotificationEnabled'] = emailNotificationEnabled;
 
       // 印鑑画像をアップロード
       if (stampImagePath != null) {

@@ -116,10 +116,15 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
       final totalAmount = Validators.parseAmount(_totalAmountController.text)!;
       final recipientName = _recipientNameController.text.trim();
 
+      // 宛名が空の場合は空文字列、そうでない場合は「様」を付ける
+      final formattedRecipientName = recipientName.isEmpty
+          ? ''
+          : (recipientName.endsWith('様') ? recipientName : '$recipientName 様');
+
       final receiptController = ref.read(receiptControllerProvider.notifier);
       final receipt = await receiptController.createReceipt(
         store: store,
-        recipientName: recipientName.endsWith('様') ? recipientName : '$recipientName 様',
+        recipientName: formattedRecipientName,
         memo: _memoController.text.trim(),
         totalAmount: totalAmount,
         taxRate: _selectedTaxRate,
@@ -272,7 +277,7 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
                   TextFormField(
                     controller: _recipientNameController,
                     decoration: const InputDecoration(
-                      labelText: '宛名',
+                      labelText: '宛名（任意）',
                       prefixIcon: Icon(Icons.person),
                       hintText: '〇〇株式会社',
                     ),

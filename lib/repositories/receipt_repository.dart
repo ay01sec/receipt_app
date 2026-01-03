@@ -152,6 +152,18 @@ class ReceiptRepository {
       final doc = await docRef.get();
       final receipt = Receipt.fromFirestore(doc);
       print('🟢 ReceiptRepository: 領収書作成完了 - receiptNumber: ${receipt.receiptNumber}, pdfUrl: ${receipt.pdfUrl}');
+
+      // メール送信が有効な場合、メール送信キューに追加
+      if (store.emailNotificationEnabled) {
+        print('🔵 ReceiptRepository: メール送信キューに追加中');
+        await _addToEmailQueue(
+          userId: store.userId,
+          receipt: receipt,
+          store: store,
+        );
+        print('🟢 ReceiptRepository: メール送信キュー追加完了');
+      }
+
       return receipt;
     } catch (e, stackTrace) {
       print('🔴 ReceiptRepository: エラー発生 - $e');
@@ -323,6 +335,85 @@ class ReceiptRepository {
           .delete();
     } catch (e) {
       throw Exception('領収書の完全削除に失敗しました: ${e.toString()}');
+    }
+  }
+
+  /// メール送信キューに追加
+  Future<void> _addToEmailQueue({
+    required String userId,
+    required Receipt receipt,
+    required Store store,
+  }) async {
+    try {
+      // ユーザーのメールアドレスを取得（Firebaseの認証情報から）
+      // ※実装時にはFirebaseAuthから取得する必要があります
+      final userDoc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
+          .get();
+
+      final userEmail = userDoc.data()?['email'] as String?;
+      if (userEmail == null) {
+        print('🟡 ReceiptRepository: ユーザーのメールアドレスが見つかりません');
+        return;
+      }
+
+      // メール送信キューにドキュメントを追加
+      await _firestore.collection('emailQueue').add({
+        'to': userEmail,
+        'template': {
+          'name': 'receiptCreated',
+          'data': {
+            'receiptNumber': receipt.receiptNumber,
+            'recipientName': receipt.recipientName,
+            'totalAmount': Formatters.formatAmount(receipt.totalAmount),
+            'issueDateString': receipt.issueDateString,
+            'storeName': store.storeName,
+          },
+        },
+        'message': {
+          'subject': '領収書が作成されました - ${receipt.receiptNumber}',
+          'html': '''
+            <h2>領収書が作成されました</h2>
+            <p>以下の領収書が作成されました。</p>
+            <h3>領収書情報</h3>
+            <ul>
+              <li><strong>領収書No:</strong> ${receipt.receiptNumber}</li>
+              <li><strong>発行日:</strong> ${receipt.issueDateString}</li>
+              <li><strong>宛名:</strong> ${receipt.recipientName}</li>
+              <li><strong>但し書き:</strong> ${receipt.memo}</li>
+              <li><strong>税込金額:</strong> ¥${Formatters.formatAmount(receipt.totalAmount)}</li>
+              <li><strong>税抜金額:</strong> ¥${Formatters.formatAmount(receipt.subtotalAmount)}</li>
+              <li><strong>消費税:</strong> ¥${Formatters.formatAmount(receipt.taxAmount)}</li>
+              <li><strong>タイムスタンプ:</strong> ${receipt.createdAt.millisecondsSinceEpoch} ms</li>
+            </ul>
+            <h3>店舗情報</h3>
+            <ul>
+              <li><strong>店舗名:</strong> ${store.storeName}</li>
+              <li><strong>住所:</strong> ${store.fullAddress}</li>
+              <li><strong>電話番号:</strong> ${store.phoneNumber}</li>
+            </ul>
+            ${receipt.pdfUrl != null ? '<p><a href="${receipt.pdfUrl}">領収書PDFをダウンロード</a></p>' : ''}
+          ''',
+        },
+        'attachments': receipt.pdfUrl != null
+            ? [
+                {
+                  'filename': '${receipt.receiptNumber}.pdf',
+                  'path': receipt.pdfUrl,
+                }
+              ]
+            : [],
+        'status': 'pending',
+        'userId': userId,
+        'receiptId': receipt.id,
+        'createdAt': Timestamp.now(),
+      });
+
+      print('🟢 ReceiptRepository: メール送信キュー追加成功 - to: $userEmail');
+    } catch (e) {
+      print('🔴 ReceiptRepository: メール送信キュー追加エラー - $e');
+      // メール送信エラーは無視して処理を続行
     }
   }
 }
