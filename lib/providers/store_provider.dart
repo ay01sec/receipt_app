@@ -139,6 +139,8 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
 final storeControllerProvider =
     StateNotifierProvider<StoreController, AsyncValue<Store?>>((ref) {
   final storeRepository = ref.watch(storeRepositoryProvider);
-  final user = ref.watch(currentUserProvider);
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
+  print('🔵 storeControllerProvider: authState = ${authState.toString()}, user = ${user?.uid ?? "null"}');
   return StoreController(storeRepository, user?.uid);
 });
