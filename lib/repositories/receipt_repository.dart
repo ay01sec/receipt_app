@@ -235,9 +235,11 @@ class ReceiptRepository {
   }
 
   /// 領収書を削除（論理削除）
-  Future<void> deleteReceipt(String storeId, String receiptId) async {
+  Future<void> deleteReceipt(String userId, String storeId, String receiptId) async {
     try {
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .collection(FirestoreCollections.receipts)
@@ -254,12 +256,13 @@ class ReceiptRepository {
 
   /// 領収書を完全削除（物理削除）
   Future<void> permanentlyDeleteReceipt(
+    String userId,
     String storeId,
     String receiptId,
   ) async {
     try {
       // PDFを削除
-      final receipt = await getReceipt(storeId, receiptId);
+      final receipt = await getReceipt(userId, storeId, receiptId);
       if (receipt?.pdfStoragePath != null) {
         try {
           await _storage.ref().child(receipt!.pdfStoragePath!).delete();
@@ -270,6 +273,8 @@ class ReceiptRepository {
 
       // Firestoreから削除
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .collection(FirestoreCollections.receipts)
