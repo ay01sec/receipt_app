@@ -7,11 +7,13 @@ import '../../utils/constants.dart';
 import '../../utils/validators.dart';
 
 class ReceiptDetailScreen extends ConsumerWidget {
+  final String userId;
   final String storeId;
   final String receiptId;
 
   const ReceiptDetailScreen({
     super.key,
+    required this.userId,
     required this.storeId,
     required this.receiptId,
   });
@@ -20,7 +22,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final receiptState = ref.watch(
       receiptDetailProvider(
-        ReceiptParams(storeId: storeId, receiptId: receiptId),
+        ReceiptParams(userId: userId, storeId: storeId, receiptId: receiptId),
       ),
     );
 

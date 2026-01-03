@@ -124,6 +124,7 @@ class _CreateReceiptScreenState extends ConsumerState<CreateReceiptScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => ReceiptDetailScreen(
+                      userId: store.userId,
                       storeId: store.id,
                       receiptId: receipt.id,
                     ),

@@ -27,7 +27,7 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
     super.dispose();
   }
 
-  void _clearFilters(String storeId) {
+  void _clearFilters(String userId, String storeId) {
     _recipientNameController.clear();
     _minAmountController.clear();
     _maxAmountController.clear();
@@ -36,14 +36,18 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
     });
 
     // 検索をリセット
-    ref.read(receiptSearchControllerProvider(storeId).notifier).refresh();
+    ref.read(receiptSearchControllerProvider(
+      ReceiptSearchParams(userId: userId, storeId: storeId)
+    ).notifier).refresh();
   }
 
-  void _search(String storeId) {
+  void _search(String userId, String storeId) {
     final minAmount = Validators.parseAmount(_minAmountController.text);
     final maxAmount = Validators.parseAmount(_maxAmountController.text);
 
-    ref.read(receiptSearchControllerProvider(storeId).notifier).searchReceipts(
+    ref.read(receiptSearchControllerProvider(
+      ReceiptSearchParams(userId: userId, storeId: storeId)
+    ).notifier).searchReceipts(
           startDate: _selectedDateRange?.start,
           endDate: _selectedDateRange?.end,
           recipientName: _recipientNameController.text.trim().isNotEmpty
@@ -86,7 +90,9 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
           }
 
           final receiptsState =
-              ref.watch(receiptSearchControllerProvider(store.id));
+              ref.watch(receiptSearchControllerProvider(
+                ReceiptSearchParams(userId: store.userId, storeId: store.id)
+              ));
 
           return Column(
             children: [
@@ -158,14 +164,14 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: () => _clearFilters(store.id),
+                                onPressed: () => _clearFilters(store.userId, store.id),
                                 child: const Text('クリア'),
                               ),
                             ),
                             const SizedBox(width: UIConstants.paddingSmall),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () => _search(store.id),
+                                onPressed: () => _search(store.userId, store.id),
                                 child: const Text('検索'),
                               ),
                             ),
@@ -191,8 +197,9 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
                     return RefreshIndicator(
                       onRefresh: () async {
                         await ref
-                            .read(receiptSearchControllerProvider(store.id)
-                                .notifier)
+                            .read(receiptSearchControllerProvider(
+                              ReceiptSearchParams(userId: store.userId, storeId: store.id)
+                            ).notifier)
                             .refresh();
                       },
                       child: ListView.builder(
@@ -227,6 +234,7 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => ReceiptDetailScreen(
+                                      userId: store.userId,
                                       storeId: store.id,
                                       receiptId: receipt.id,
                                     ),
@@ -252,8 +260,9 @@ class _ReceiptListScreenState extends ConsumerState<ReceiptListScreen> {
                         ElevatedButton(
                           onPressed: () {
                             ref
-                                .read(receiptSearchControllerProvider(store.id)
-                                    .notifier)
+                                .read(receiptSearchControllerProvider(
+                                  ReceiptSearchParams(userId: store.userId, storeId: store.id)
+                                ).notifier)
                                 .refresh();
                           },
                           child: const Text('再読み込み'),
