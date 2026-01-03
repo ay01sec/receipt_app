@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'utils/constants.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
+import 'screens/main_navigation.dart';
 
 void main() async {
   // Flutterのバインディングを初期化
@@ -80,8 +81,8 @@ class AuthWrapper extends ConsumerWidget {
     return authState.when(
       data: (user) {
         if (user != null) {
-          // ログイン済み - 後でホーム画面に変更
-          return const PlaceholderHomeScreen();
+          // ログイン済み - メインナビゲーションを表示
+          return const MainNavigation();
         } else {
           // 未ログイン - ログイン画面を表示
           return const LoginScreen();
@@ -128,57 +129,3 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-/// プレースホルダーのホーム画面（後で実装）
-class PlaceholderHomeScreen extends ConsumerWidget {
-  const PlaceholderHomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ホーム'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final authController = ref.read(authControllerProvider.notifier);
-              await authController.signOut();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.check_circle,
-              size: 80,
-              color: Colors.green,
-            ),
-            const SizedBox(height: UIConstants.paddingLarge),
-            const Text(
-              'ログイン成功！',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: UIConstants.paddingMedium),
-            Text(
-              'メール: ${user?.email ?? ""}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: UIConstants.paddingLarge),
-            const Text(
-              '※ホーム画面は後で実装します',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
