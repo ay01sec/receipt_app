@@ -97,14 +97,14 @@ class PdfService {
                 ),
               ],
             ),
-            pw.SizedBox(height: 40),
+            pw.SizedBox(height: 25),
 
             // 宛名
             pw.Text(
               '$recipientName',
               style: pw.TextStyle(font: font, fontSize: 16),
             ),
-            pw.SizedBox(height: 30),
+            pw.SizedBox(height: 20),
 
             // 金額ボックス（大きく中央に）
             pw.Center(
@@ -126,7 +126,7 @@ class PdfService {
                 ),
               ),
             ),
-            pw.SizedBox(height: 30),
+            pw.SizedBox(height: 20),
 
             // 但し書き
             pw.Center(
@@ -135,7 +135,7 @@ class PdfService {
                 style: pw.TextStyle(font: font, fontSize: 14),
               ),
             ),
-            pw.SizedBox(height: 10),
+            pw.SizedBox(height: 8),
             pw.Center(
               child: pw.Text(
                 '上記、正に領収いたしました',
@@ -145,23 +145,23 @@ class PdfService {
 
             pw.Spacer(),
 
-            // 下部：印紙枠（左）と店舗情報・印鑑（右）
+            // 下部：印紙枠（左）、内訳、店舗情報・印鑑（右）
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
-                // 左側：印紙枠
-                pw.Container(
-                  width: 180,
-                  height: 120,
-                  padding: const pw.EdgeInsets.all(10),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(width: 2),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Center(
+                // 左側：印紙枠と内訳
+                pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.end,
+                  children: [
+                    // 印紙枠（中身は空）
+                    pw.Container(
+                      width: 90,
+                      height: 120,
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(width: 2),
+                      ),
+                      child: pw.Center(
                         child: pw.Text(
                           '印紙',
                           style: pw.TextStyle(
@@ -171,41 +171,60 @@ class PdfService {
                           ),
                         ),
                       ),
-                      pw.SizedBox(height: 8),
-                      pw.Text(
-                        '内訳',
-                        style: pw.TextStyle(font: font, fontSize: 9),
-                      ),
-                      pw.SizedBox(height: 4),
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    ),
+                    pw.SizedBox(width: 15),
+                    // 内訳（印紙枠の右側）
+                    pw.Container(
+                      padding: const pw.EdgeInsets.all(10),
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Text(
-                            '税抜金額',
-                            style: pw.TextStyle(font: font, fontSize: 9),
+                            '内訳',
+                            style: pw.TextStyle(
+                              font: boldFont,
+                              fontSize: 10,
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
-                          pw.Text(
-                            '¥${Formatters.formatAmount(subtotalAmount)}',
-                            style: pw.TextStyle(font: font, fontSize: 9),
+                          pw.SizedBox(height: 5),
+                          pw.Container(
+                            width: 150,
+                            child: pw.Row(
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text(
+                                  '税抜金額',
+                                  style: pw.TextStyle(font: font, fontSize: 9),
+                                ),
+                                pw.Text(
+                                  '¥${Formatters.formatAmount(subtotalAmount)}',
+                                  style: pw.TextStyle(font: font, fontSize: 9),
+                                ),
+                              ],
+                            ),
+                          ),
+                          pw.SizedBox(height: 3),
+                          pw.Container(
+                            width: 150,
+                            child: pw.Row(
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text(
+                                  '消費税等',
+                                  style: pw.TextStyle(font: font, fontSize: 9),
+                                ),
+                                pw.Text(
+                                  '¥${Formatters.formatAmount(taxAmount)}',
+                                  style: pw.TextStyle(font: font, fontSize: 9),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      pw.SizedBox(height: 3),
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text(
-                            '消費税等',
-                            style: pw.TextStyle(font: font, fontSize: 9),
-                          ),
-                          pw.Text(
-                            '¥${Formatters.formatAmount(taxAmount)}',
-                            style: pw.TextStyle(font: font, fontSize: 9),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 // 右側：店舗情報と印鑑
