@@ -35,18 +35,32 @@ class ReceiptStatus {
   static const String deleted = 'deleted'; // 削除済み
 }
 
+// RevenueCat設定
+class RevenueCatConfig {
+  /// RevenueCat Public API Key (iOS)
+  /// 取得方法: RevenueCat Dashboard → Settings → API keys
+  /// TODO: ここにRevenueCatのAPIキーを貼り付けてください
+  static const String apiKey = 'YOUR_REVENUECAT_API_KEY_HERE';
+
+  /// Entitlement ID（権限ID）
+  static const String entitlementId = 'premium';
+
+  /// Product IDs（RevenueCatで作成した商品ID）
+  static const String monthlyProductId = 'receipt_monthly';
+  static const String premiumProductId = 'receipt_premium';
+  static const String businessProductId = 'receipt_business';
+}
+
 // サブスクリプションプラン
 class SubscriptionPlans {
   static const String monthly = 'monthly'; // 月額プラン
-  static const String yearly = 'yearly'; // 年額プラン
+  static const String premium = 'premium'; // プレミアムプラン（旧：年額）
+  static const String business = 'business'; // ビジネスプラン
 
-  // プラン価格（円）
+  // プラン価格（円）※App Store Connectで実際の価格を設定
   static const int monthlyPrice = 1000;
-  static const int yearlyPrice = 10000;
-
-  // RevenueCat商品ID
-  static const String monthlyProductId = 'monthly_1000';
-  static const String yearlyProductId = 'yearly_10000';
+  static const int premiumPrice = 5000;
+  static const int businessPrice = 10000;
 }
 
 // サブスクリプション状態
