@@ -31,21 +31,47 @@ class ReceiptRepository {
 
       print('🔵 ReceiptRepository: 金額計算完了 - total: $totalAmount, tax: $taxAmount');
 
-      // 領収書番号を生成
-      final receiptNumber = store.generateNextReceiptNumber();
-
       // 発行日
       final issueDate = DateTime.now();
       final issueDateString = Formatters.formatDate(issueDate);
 
-      // QRコードデータを生成
+      // Firestoreから最新のlastReceiptNumberを取得して番号を生成
+      print('🔵 ReceiptRepository: 最新の領収書番号取得中');
+      final storeDoc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(store.userId)
+          .collection(FirestoreCollections.stores)
+          .doc(store.id)
+          .get();
+
+      final currentLastNumber = storeDoc.data()?['lastReceiptNumber'] as int? ?? 0;
+      final nextNumber = currentLastNumber + 1;
+      final receiptNumber = 'R-${issueDate.year}-${nextNumber.toString().padLeft(5, '0')}';
+      print('🟢 ReceiptRepository: 領収書番号生成 - $receiptNumber (last: $currentLastNumber, next: $nextNumber)');
+
+      // 先にFirestoreドキュメントを作成してIDを取得
+      final now = Timestamp.now();
+      print('🔵 ReceiptRepository: Firestore仮保存開始');
+      final docRef = _firestore
+          .collection(FirestoreCollections.users)
+          .doc(store.userId)
+          .collection(FirestoreCollections.stores)
+          .doc(store.id)
+          .collection(FirestoreCollections.receipts)
+          .doc(); // 先にIDを生成
+
+      final receiptId = docRef.id;
+      print('🟢 ReceiptRepository: ReceiptID生成完了 - $receiptId');
+
+      // QRコードデータを生成（receiptIdを含める）
       final qrCodeData = QrService.generateQrData(
-        receiptId: '', // 仮のID（後で更新）
+        receiptId: receiptId,
         receiptNumber: receiptNumber,
         issueDate: issueDate,
         totalAmount: totalAmount,
         storeName: store.storeName,
       );
+      print('🟢 ReceiptRepository: QRコード生成完了 - $qrCodeData');
 
       // PDFを生成
       print('🔵 ReceiptRepository: PDF生成開始');
@@ -67,16 +93,9 @@ class ReceiptRepository {
       );
       print('🟢 ReceiptRepository: PDF生成完了 - ${pdfBytes.length} bytes');
 
-      // Firestoreに領収書情報を保存（サブコレクション構造）
-      final now = Timestamp.now();
+      // Firestoreにデータを保存
       print('🔵 ReceiptRepository: Firestore保存開始');
-      final docRef = await _firestore
-          .collection(FirestoreCollections.users)
-          .doc(store.userId)
-          .collection(FirestoreCollections.stores)
-          .doc(store.id)
-          .collection(FirestoreCollections.receipts)
-          .add({
+      await docRef.set({
         'receiptNumber': receiptNumber,
         'status': ReceiptStatus.issued,
         'issueDate': Timestamp.fromDate(issueDate),
