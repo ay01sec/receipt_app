@@ -80,9 +80,14 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
     String? defaultMemo,
     String? stampImagePath,
   }) async {
+    if (_userId == null) {
+      throw Exception('ユーザーがログインしていません');
+    }
+
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       return await _storeRepository.updateStore(
+        userId: _userId,
         storeId: storeId,
         storeName: storeName,
         storeAddress1: storeAddress1,
@@ -97,7 +102,11 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
 
   /// 領収書番号をインクリメント
   Future<void> incrementReceiptNumber(String storeId) async {
-    await _storeRepository.incrementReceiptNumber(storeId);
+    if (_userId == null) {
+      throw Exception('ユーザーがログインしていません');
+    }
+
+    await _storeRepository.incrementReceiptNumber(_userId, storeId);
     await _loadStore();
   }
 
@@ -108,7 +117,7 @@ class StoreController extends StateNotifier<AsyncValue<Store?>> {
     }
 
     state = const AsyncValue.loading();
-    await _storeRepository.deleteStore(storeId, _userId);
+    await _storeRepository.deleteStore(_userId, storeId);
     state = const AsyncValue.data(null);
   }
 

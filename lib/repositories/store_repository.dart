@@ -13,8 +13,9 @@ class StoreRepository {
   Future<Store?> getStore(String userId) async {
     try {
       final querySnapshot = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
-          .where('userId', isEqualTo: userId)
           .limit(1)
           .get();
 
@@ -29,9 +30,11 @@ class StoreRepository {
   }
 
   /// 店舗情報をIDで取得
-  Future<Store?> getStoreById(String storeId) async {
+  Future<Store?> getStoreById(String userId, String storeId) async {
     try {
       final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .get();
@@ -66,8 +69,10 @@ class StoreRepository {
         stampImageUrl = await _uploadStampImage(userId, stampImagePath);
       }
 
-      // Firestoreに店舗情報を保存
+      // Firestoreに店舗情報を保存（サブコレクション構造）
       final docRef = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .add({
         'userId': userId,
@@ -94,6 +99,7 @@ class StoreRepository {
 
   /// 店舗情報を更新
   Future<Store> updateStore({
+    required String userId,
     required String storeId,
     String? storeName,
     String? storeAddress1,
@@ -117,22 +123,23 @@ class StoreRepository {
 
       // 印鑑画像をアップロード
       if (stampImagePath != null) {
-        final store = await getStoreById(storeId);
-        if (store != null) {
-          final stampImageUrl = await _uploadStampImage(
-            store.userId,
-            stampImagePath,
-          );
-          updateData['stampImageUrl'] = stampImageUrl;
-        }
+        final stampImageUrl = await _uploadStampImage(
+          userId,
+          stampImagePath,
+        );
+        updateData['stampImageUrl'] = stampImageUrl;
       }
 
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .update(updateData);
 
       final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .get();
@@ -144,9 +151,11 @@ class StoreRepository {
   }
 
   /// 領収書番号をインクリメント
-  Future<void> incrementReceiptNumber(String storeId) async {
+  Future<void> incrementReceiptNumber(String userId, String storeId) async {
     try {
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .update({
@@ -190,13 +199,15 @@ class StoreRepository {
   }
 
   /// 店舗情報を削除
-  Future<void> deleteStore(String storeId, String userId) async {
+  Future<void> deleteStore(String userId, String storeId) async {
     try {
       // 印鑑画像を削除
       await deleteStampImage(userId);
 
       // Firestoreから店舗情報を削除
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .delete();

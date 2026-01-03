@@ -61,9 +61,11 @@ class ReceiptRepository {
         qrCodeData: qrCodeData,
       );
 
-      // Firestoreに領収書情報を保存
+      // Firestoreに領収書情報を保存（サブコレクション構造）
       final now = Timestamp.now();
       final docRef = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(store.userId)
           .collection(FirestoreCollections.stores)
           .doc(store.id)
           .collection(FirestoreCollections.receipts)
@@ -100,6 +102,8 @@ class ReceiptRepository {
 
       // 領収書番号をインクリメント（StoreRepositoryを経由せず直接更新）
       await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(store.userId)
           .collection(FirestoreCollections.stores)
           .doc(store.id)
           .update({
@@ -116,9 +120,11 @@ class ReceiptRepository {
   }
 
   /// 領収書を取得
-  Future<Receipt?> getReceipt(String storeId, String receiptId) async {
+  Future<Receipt?> getReceipt(String userId, String storeId, String receiptId) async {
     try {
       final doc = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .collection(FirestoreCollections.receipts)
@@ -137,11 +143,14 @@ class ReceiptRepository {
 
   /// 領収書一覧を取得（最新順）
   Future<List<Receipt>> getReceipts({
+    required String userId,
     required String storeId,
     int limit = 20,
   }) async {
     try {
       final querySnapshot = await _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .collection(FirestoreCollections.receipts)
@@ -160,6 +169,7 @@ class ReceiptRepository {
 
   /// 領収書を検索
   Future<List<Receipt>> searchReceipts({
+    required String userId,
     required String storeId,
     DateTime? startDate,
     DateTime? endDate,
@@ -170,6 +180,8 @@ class ReceiptRepository {
   }) async {
     try {
       Query query = _firestore
+          .collection(FirestoreCollections.users)
+          .doc(userId)
           .collection(FirestoreCollections.stores)
           .doc(storeId)
           .collection(FirestoreCollections.receipts)
