@@ -278,6 +278,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       final authController =
                           ref.read(authControllerProvider.notifier);
                       await authController.signOut();
+
+                      // ログアウト後、すべての状態をリセット
+                      ref.invalidate(storeControllerProvider);
+                      ref.invalidate(currentStoreProvider);
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text('ログアウト'),
