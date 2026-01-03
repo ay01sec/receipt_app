@@ -240,7 +240,7 @@ class ReceiptRepository {
           .collection(FirestoreCollections.receipts)
           .where('status', isEqualTo: ReceiptStatus.issued);
 
-      // 日付範囲で検索
+      // 日付範囲で検索（Firestore側で実行）
       if (startDate != null) {
         query = query.where(
           'issueDate',
@@ -263,25 +263,35 @@ class ReceiptRepository {
         );
       }
 
-      // 宛名で検索
-      if (recipientName != null && recipientName.isNotEmpty) {
-        query = query.where('recipientName', isEqualTo: recipientName);
-      }
-
-      // 金額範囲で検索
-      if (minAmount != null) {
-        query = query.where('totalAmount', isGreaterThanOrEqualTo: minAmount);
-      }
-      if (maxAmount != null) {
-        query = query.where('totalAmount', isLessThanOrEqualTo: maxAmount);
-      }
-
-      query = query.orderBy('issueDate', descending: true).limit(limit);
+      // 宛名・金額フィルタはクライアント側で実行（インデックス不要）
+      query = query.orderBy('issueDate', descending: true).limit(limit * 2); // 多めに取得
 
       final querySnapshot = await query.get();
-      return querySnapshot.docs
+      var receipts = querySnapshot.docs
           .map((doc) => Receipt.fromFirestore(doc))
           .toList();
+
+      // クライアント側で宛名フィルタ（部分一致検索）
+      if (recipientName != null && recipientName.isNotEmpty) {
+        receipts = receipts.where((receipt) {
+          return receipt.recipientName.contains(recipientName);
+        }).toList();
+      }
+
+      // クライアント側で金額範囲フィルタ
+      if (minAmount != null) {
+        receipts = receipts.where((receipt) {
+          return receipt.totalAmount >= minAmount;
+        }).toList();
+      }
+      if (maxAmount != null) {
+        receipts = receipts.where((receipt) {
+          return receipt.totalAmount <= maxAmount;
+        }).toList();
+      }
+
+      // 最終的なlimit適用
+      return receipts.take(limit).toList();
     } catch (e) {
       throw Exception('領収書の検索に失敗しました: ${e.toString()}');
     }
