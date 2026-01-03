@@ -24,7 +24,7 @@ class QrService {
       'receiptId': receiptId,
       'receiptNumber': receiptNumber,
       'issueDate': issueDate.toIso8601String(),
-      'timestamp': issueDate.millisecondsSinceEpoch ~/ 1000, // Unix timestamp (seconds)
+      'timestamp': issueDate.millisecondsSinceEpoch, // Unix timestamp (milliseconds)
       'totalAmount': totalAmount,
       'storeName': storeName,
       if (verifyUrl != null) 'verifyUrl': verifyUrl,
