@@ -143,7 +143,7 @@ class PdfService {
               ),
             ),
 
-            pw.Spacer(),
+            pw.SizedBox(height: 20),
 
             // 下部：印紙枠（左）、内訳、店舗情報・印鑑（右）
             pw.Row(
