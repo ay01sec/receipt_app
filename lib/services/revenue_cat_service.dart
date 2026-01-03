@@ -169,8 +169,10 @@ class SubscriptionStatus {
     if (productIdentifier == null) return null;
     if (productIdentifier!.contains('monthly')) {
       return '月額プラン';
-    } else if (productIdentifier!.contains('yearly')) {
-      return '年額プラン';
+    } else if (productIdentifier!.contains('premium')) {
+      return 'プレミアムプラン';
+    } else if (productIdentifier!.contains('business')) {
+      return 'ビジネスプラン';
     }
     return null;
   }
