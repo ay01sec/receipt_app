@@ -95,6 +95,7 @@ class ReceiptController extends StateNotifier<AsyncValue<Receipt?>> {
     state = const AsyncValue.loading();
 
     try {
+      print('🔵 ReceiptController: createReceipt呼び出し');
       final receipt = await _receiptRepository.createReceipt(
         store: store,
         recipientName: recipientName,
@@ -104,9 +105,12 @@ class ReceiptController extends StateNotifier<AsyncValue<Receipt?>> {
         stampImageBytes: stampImageBytes,
       );
 
+      print('🟢 ReceiptController: createReceipt成功');
       state = AsyncValue.data(receipt);
       return receipt;
     } catch (e, stack) {
+      print('🔴 ReceiptController: createReceiptエラー - $e');
+      print('🔴 ReceiptController: StackTrace - $stack');
       state = AsyncValue.error(e, stack);
       return null;
     }
