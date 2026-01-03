@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // receipts フォルダ: 認証済みユーザーが自分のユーザーIDフォルダ内のファイルにアクセス可能
+    match /receipts/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // stamps フォルダ: 認証済みユーザーが自分のユーザーIDフォルダ内のファイルにアクセス可能
+    match /stamps/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
