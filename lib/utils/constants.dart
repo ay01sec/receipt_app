@@ -38,9 +38,13 @@ class ReceiptStatus {
 // RevenueCat設定
 class RevenueCatConfig {
   /// RevenueCat Public API Key (iOS)
+  /// .envファイルから読み込まれます（main.dartで初期化）
   /// 取得方法: RevenueCat Dashboard → Settings → API keys
-  /// TODO: ここにRevenueCatのAPIキーを貼り付けてください
-  static const String apiKey = 'YOUR_REVENUECAT_API_KEY_HERE';
+  /// フォールバック用のデフォルト値
+  static const String _defaultApiKey = 'YOUR_REVENUECAT_API_KEY_HERE';
+
+  /// API キーを取得（.envから読み込まれた値またはデフォルト値）
+  static String apiKey = _defaultApiKey;
 
   /// Entitlement ID（権限ID）
   static const String entitlementId = 'premium';

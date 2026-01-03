@@ -40,6 +40,7 @@ dependencies:
   http: ^1.1.0
   url_launcher: ^6.2.0
   syncfusion_flutter_pdfviewer: ^28.1.33
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,7 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/
+    - .env
 
   # フォントの登録
   fonts:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'utils/constants.dart';
 import 'providers/auth_provider.dart';
@@ -11,6 +12,21 @@ import 'services/revenue_cat_service.dart';
 void main() async {
   // Flutterのバインディングを初期化
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 環境変数を読み込む
+  try {
+    await dotenv.load(fileName: '.env');
+    // .envからRevenueCat APIキーを読み込んでRevenueCatConfigに設定
+    final apiKey = dotenv.env['REVENUECAT_API_KEY'];
+    if (apiKey != null && apiKey.isNotEmpty && apiKey != 'YOUR_API_KEY_HERE') {
+      RevenueCatConfig.apiKey = apiKey;
+      debugPrint('✅ RevenueCat APIキーを.envから読み込みました');
+    } else {
+      debugPrint('⚠️ RevenueCat APIキーが.envに設定されていません');
+    }
+  } catch (e) {
+    debugPrint('⚠️ .envファイルの読み込みに失敗しました: $e');
+  }
 
   // Firebaseを初期化（既に初期化済みの場合はスキップ）
   try {
