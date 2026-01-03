@@ -12,10 +12,19 @@ void main() async {
   // Flutterのバインディングを初期化
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebaseを初期化
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Firebaseを初期化（既に初期化済みの場合はスキップ）
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // 既に初期化済みの場合はエラーを無視
+    if (e.toString().contains('duplicate-app')) {
+      debugPrint('Firebase is already initialized');
+    } else {
+      rethrow;
+    }
+  }
 
   // RevenueCatを初期化
   try {
