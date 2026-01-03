@@ -6,6 +6,7 @@ import 'utils/constants.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_navigation.dart';
+import 'services/revenue_cat_service.dart';
 
 void main() async {
   // Flutterのバインディングを初期化
@@ -15,6 +16,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // RevenueCatを初期化
+  try {
+    await RevenueCatService.initialize(
+      apiKey: RevenueCatConfig.apiKey,
+    );
+  } catch (e) {
+    // RevenueCat初期化エラーはログのみ（アプリは起動する）
+    debugPrint('RevenueCat初期化エラー: $e');
+  }
 
   // アプリを起動
   runApp(
