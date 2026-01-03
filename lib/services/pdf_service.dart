@@ -63,219 +63,196 @@ class PdfService {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            // ヘッダー（領収書タイトル）
-            pw.Center(
-              child: pw.Text(
-                '領収書',
-                style: pw.TextStyle(
-                  font: boldFont,
-                  fontSize: 28,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-            ),
-            pw.SizedBox(height: 30),
-
-            // 領収書番号と発行日
+            // ヘッダー部分（タイトルと発行日）
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(
-                  '領収書No: $receiptNumber',
-                  style: pw.TextStyle(font: font, fontSize: 10),
+                pw.SizedBox(width: 150), // 左側の余白
+                // 中央：領収書タイトル
+                pw.Expanded(
+                  child: pw.Center(
+                    child: pw.Text(
+                      '領収書',
+                      style: pw.TextStyle(
+                        font: boldFont,
+                        fontSize: 32,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-                pw.Text(
-                  '発行日: ${Formatters.formatDate(issueDate)}',
-                  style: pw.TextStyle(font: font, fontSize: 10),
+                // 右側：発行日
+                pw.Container(
+                  width: 150,
+                  alignment: pw.Alignment.topRight,
+                  child: pw.Text(
+                    '発行日：${Formatters.formatDate(issueDate)}',
+                    style: pw.TextStyle(font: font, fontSize: 10),
+                  ),
                 ),
               ],
             ),
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 40),
 
             // 宛名
             pw.Text(
-              recipientName,
+              '$recipientName',
               style: pw.TextStyle(font: font, fontSize: 16),
             ),
             pw.SizedBox(height: 30),
 
-            // 金額ボックス
-            pw.Container(
-              width: double.infinity,
-              padding: const pw.EdgeInsets.all(20),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(width: 2),
-              ),
-              child: pw.Column(
-                children: [
-                  pw.Text(
-                    '金額',
-                    style: pw.TextStyle(font: font, fontSize: 12),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Text(
+            // 金額ボックス（大きく中央に）
+            pw.Center(
+              child: pw.Container(
+                width: 400,
+                padding: const pw.EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(width: 3),
+                ),
+                child: pw.Center(
+                  child: pw.Text(
                     '¥${Formatters.formatAmount(totalAmount)}-',
                     style: pw.TextStyle(
                       font: boldFont,
-                      fontSize: 36,
+                      fontSize: 48,
                       fontWeight: pw.FontWeight.bold,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-            pw.SizedBox(height: 20),
-
-            // 但し書き
-            pw.Text(
-              '但し、$memo',
-              style: pw.TextStyle(font: font, fontSize: 14),
-            ),
-            pw.SizedBox(height: 5),
-            pw.Text(
-              '上記、正に領収いたしました',
-              style: pw.TextStyle(font: font, fontSize: 12),
             ),
             pw.SizedBox(height: 30),
 
-            // 内訳
-            pw.Container(
-              padding: const pw.EdgeInsets.all(15),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(width: 1, color: PdfColors.grey400),
-                borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
+            // 但し書き
+            pw.Center(
+              child: pw.Text(
+                '但し、$memo として',
+                style: pw.TextStyle(font: font, fontSize: 14),
               ),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    '内訳',
-                    style: pw.TextStyle(
-                      font: boldFont,
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                  ),
-                  pw.SizedBox(height: 10),
-                  pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        '税抜金額',
-                        style: pw.TextStyle(font: font, fontSize: 10),
-                      ),
-                      pw.Text(
-                        '¥${Formatters.formatAmount(subtotalAmount)}',
-                        style: pw.TextStyle(font: font, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        '消費税（${taxRate.toStringAsFixed(0)}%）',
-                        style: pw.TextStyle(font: font, fontSize: 10),
-                      ),
-                      pw.Text(
-                        '¥${Formatters.formatAmount(taxAmount)}',
-                        style: pw.TextStyle(font: font, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                  pw.Divider(thickness: 1),
-                  pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text(
-                        '税込金額',
-                        style: pw.TextStyle(
-                          font: boldFont,
-                          fontSize: 11,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                      pw.Text(
-                        '¥${Formatters.formatAmount(totalAmount)}',
-                        style: pw.TextStyle(
-                          font: boldFont,
-                          fontSize: 11,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            ),
+            pw.SizedBox(height: 10),
+            pw.Center(
+              child: pw.Text(
+                '上記、正に領収いたしました',
+                style: pw.TextStyle(font: font, fontSize: 12),
               ),
             ),
 
             pw.Spacer(),
 
-            // 店舗情報と印鑑・QRコード
+            // 下部：印紙枠（左）と店舗情報・印鑑（右）
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
-                // 店舗情報
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      storeName,
-                      style: pw.TextStyle(
-                        font: boldFont,
-                        fontSize: 14,
-                        fontWeight: pw.FontWeight.bold,
+                // 左側：印紙枠
+                pw.Container(
+                  width: 180,
+                  height: 120,
+                  padding: const pw.EdgeInsets.all(10),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(width: 2),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Center(
+                        child: pw.Text(
+                          '印紙',
+                          style: pw.TextStyle(
+                            font: boldFont,
+                            fontSize: 11,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Text(
-                      storeAddress,
-                      style: pw.TextStyle(font: font, fontSize: 10),
-                    ),
-                    pw.SizedBox(height: 3),
-                    pw.Text(
-                      'TEL: $phoneNumber',
-                      style: pw.TextStyle(font: font, fontSize: 10),
-                    ),
-                    if (invoiceNumber != null) ...[
-                      pw.SizedBox(height: 3),
+                      pw.SizedBox(height: 8),
                       pw.Text(
-                        'インボイス番号: $invoiceNumber',
+                        '内訳',
                         style: pw.TextStyle(font: font, fontSize: 9),
                       ),
+                      pw.SizedBox(height: 4),
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            '税抜金額',
+                            style: pw.TextStyle(font: font, fontSize: 9),
+                          ),
+                          pw.Text(
+                            '¥${Formatters.formatAmount(subtotalAmount)}',
+                            style: pw.TextStyle(font: font, fontSize: 9),
+                          ),
+                        ],
+                      ),
+                      pw.SizedBox(height: 3),
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            '消費税等',
+                            style: pw.TextStyle(font: font, fontSize: 9),
+                          ),
+                          pw.Text(
+                            '¥${Formatters.formatAmount(taxAmount)}',
+                            style: pw.TextStyle(font: font, fontSize: 9),
+                          ),
+                        ],
+                      ),
                     ],
-                  ],
+                  ),
                 ),
 
-                // 印鑑とQRコード
+                // 右側：店舗情報と印鑑
                 pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.end,
                   children: [
-                    // 印鑑画像
+                    // 店舗情報
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          '金額　$storeName',
+                          style: pw.TextStyle(font: font, fontSize: 10),
+                        ),
+                        pw.SizedBox(height: 3),
+                        pw.Text(
+                          storeAddress,
+                          style: pw.TextStyle(font: font, fontSize: 9),
+                        ),
+                        pw.SizedBox(height: 3),
+                        pw.Text(
+                          'TEL: $phoneNumber',
+                          style: pw.TextStyle(font: font, fontSize: 9),
+                        ),
+                        if (invoiceNumber != null) ...[
+                          pw.SizedBox(height: 3),
+                          pw.Text(
+                            'インボイス番号: $invoiceNumber',
+                            style: pw.TextStyle(font: font, fontSize: 8),
+                          ),
+                        ],
+                      ],
+                    ),
+                    pw.SizedBox(width: 15),
+                    // 印鑑
                     if (stampImage != null)
                       pw.Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         child: pw.Image(stampImage),
                       ),
-                    pw.SizedBox(width: 10),
-                    // QRコード
-                    pw.BarcodeWidget(
-                      barcode: pw.Barcode.qrCode(),
-                      data: qrCodeData,
-                      width: 80,
-                      height: 80,
-                    ),
                   ],
                 ),
               ],
             ),
 
-            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 10),
           ],
         ),
       ),
