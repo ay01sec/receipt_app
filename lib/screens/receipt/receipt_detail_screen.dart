@@ -108,6 +108,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
                         ),
                         const Divider(),
                         _buildCopyableInfoRow(
+                          context,
                           'タイムスタンプ (日時)',
                           '${receipt.createdAt.year}/${receipt.createdAt.month.toString().padLeft(2, '0')}/${receipt.createdAt.day.toString().padLeft(2, '0')} '
                           '${receipt.createdAt.hour.toString().padLeft(2, '0')}:${receipt.createdAt.minute.toString().padLeft(2, '0')}:'
@@ -116,6 +117,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
                         if (receipt.pdfUrl != null) ...[
                           const Divider(),
                           _buildLinkInfoRow(
+                            context,
                             'PDF URL',
                             receipt.pdfUrl!,
                           ),
@@ -182,7 +184,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCopyableInfoRow(String label, String value) {
+  Widget _buildCopyableInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
       child: Row(
@@ -229,7 +231,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLinkInfoRow(String label, String url) {
+  Widget _buildLinkInfoRow(BuildContext context, String label, String url) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.paddingSmall),
       child: Row(
