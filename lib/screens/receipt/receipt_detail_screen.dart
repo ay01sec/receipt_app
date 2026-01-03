@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../../providers/receipt_provider.dart';
 import '../../services/qr_service.dart';
 import '../../utils/constants.dart';
@@ -39,9 +40,8 @@ class ReceiptDetailScreen extends ConsumerWidget {
                 icon: const Icon(Icons.share),
                 onPressed: () async {
                   if (receipt.pdfUrl != null) {
-                    await Share.share(
-                      '領収書No: ${receipt.receiptNumber}\n${receipt.pdfUrl}',
-                      subject: '領収書',
+                    await Share.shareUri(
+                      Uri.parse(receipt.pdfUrl!),
                     );
                   }
                 },
@@ -63,11 +63,31 @@ class ReceiptDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // QRコード
+                // QRコード（タップでPDF表示）
                 Center(
-                  child: QrService.generateQrWidget(
-                    data: receipt.qrCodeData,
-                    size: 150,
+                  child: GestureDetector(
+                    onTap: receipt.pdfUrl != null
+                        ? () => _showPdfModal(context, receipt.pdfUrl!)
+                        : null,
+                    child: Column(
+                      children: [
+                        QrService.generateQrWidget(
+                          data: receipt.qrCodeData,
+                          size: 150,
+                        ),
+                        if (receipt.pdfUrl != null) ...[
+                          const SizedBox(height: 8),
+                          const Text(
+                            'タップして領収書を表示',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: UIConstants.paddingLarge),
@@ -131,10 +151,7 @@ class ReceiptDetailScreen extends ConsumerWidget {
                 // PDFボタン
                 if (receipt.pdfUrl != null)
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      // PDFを開く（実装は後で）
-                      await Share.share(receipt.pdfUrl!);
-                    },
+                    onPressed: () => _showPdfModal(context, receipt.pdfUrl!),
                     icon: const Icon(Icons.picture_as_pdf),
                     label: const Text('PDFを表示'),
                   ),
@@ -150,6 +167,77 @@ class ReceiptDetailScreen extends ConsumerWidget {
               const Icon(Icons.error, size: 64, color: Colors.red),
               const SizedBox(height: UIConstants.paddingMedium),
               Text('エラー: $error'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPdfModal(BuildContext context, String pdfUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.9,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // ヘッダー
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '領収書',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      // 共有ボタン
+                      IconButton(
+                        icon: const Icon(Icons.share),
+                        onPressed: () async {
+                          await Share.shareUri(Uri.parse(pdfUrl));
+                        },
+                      ),
+                      // 外部ブラウザで開くボタン
+                      IconButton(
+                        icon: const Icon(Icons.open_in_browser),
+                        onPressed: () async {
+                          final uri = Uri.parse(pdfUrl);
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                      ),
+                      // 閉じるボタン
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Divider(),
+              // PDFビューワー
+              Expanded(
+                child: SfPdfViewer.network(
+                  pdfUrl,
+                  onDocumentLoadFailed: (details) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('PDFの読み込みに失敗しました: ${details.error}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
