@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../models/store.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/store_provider.dart';
 import '../../utils/constants.dart';
