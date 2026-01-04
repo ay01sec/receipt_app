@@ -94,12 +94,12 @@ class SubscriptionController extends StateNotifier<AsyncValue<CustomerInfo?>> {
           'subscriptionStatus': 'active',
           'subscriptionStartDate': premiumEntitlement.latestPurchaseDate != null
               ? Timestamp.fromDate(DateTime.parse(premiumEntitlement.latestPurchaseDate!))
-              : FieldValue.serverTimestamp(),
+              : Timestamp.fromDate(DateTime.now()),
           'subscriptionEndDate': premiumEntitlement.expirationDate != null
               ? Timestamp.fromDate(DateTime.parse(premiumEntitlement.expirationDate!))
               : null,
           'autoRenew': premiumEntitlement.willRenew,
-          'updatedAt': FieldValue.serverTimestamp(),
+          'updatedAt': Timestamp.fromDate(DateTime.now()),
         });
 
         print('🟢 Firestore更新成功: plan=$plan, status=active');
@@ -110,7 +110,7 @@ class SubscriptionController extends StateNotifier<AsyncValue<CustomerInfo?>> {
             .doc(user.uid)
             .update({
           'subscriptionStatus': 'inactive',
-          'updatedAt': FieldValue.serverTimestamp(),
+          'updatedAt': Timestamp.fromDate(DateTime.now()),
         });
 
         print('🟢 Firestore更新成功: status=inactive');
