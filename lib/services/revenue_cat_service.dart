@@ -13,14 +13,25 @@ class RevenueCatService {
     required String apiKey,
     String? userId,
   }) async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      print('⚠️ RevenueCat は既に初期化済みです');
+      return;
+    }
 
     try {
+      print('🔵 RevenueCat 初期化開始');
+      print('🔵 API Key (最初の10文字): ${apiKey.substring(0, apiKey.length > 10 ? 10 : apiKey.length)}...');
+      print('🔵 User ID: ${userId ?? "未設定"}');
+
       await Purchases.configure(
         PurchasesConfiguration(apiKey)..appUserID = userId,
       );
       _isInitialized = true;
-    } catch (e) {
+
+      print('🟢 RevenueCat 初期化完了');
+    } catch (e, stackTrace) {
+      print('🔴 RevenueCat 初期化エラー: $e');
+      print('🔴 StackTrace: $stackTrace');
       throw Exception('RevenueCatの初期化に失敗しました: ${e.toString()}');
     }
   }
@@ -28,8 +39,26 @@ class RevenueCatService {
   /// サブスクリプション商品一覧を取得
   static Future<Offerings?> getOfferings() async {
     try {
-      return await Purchases.getOfferings();
-    } catch (e) {
+      print('🔵 RevenueCatService.getOfferings() 開始');
+      print('🔵 SDK初期化状態: $_isInitialized');
+
+      final offerings = await Purchases.getOfferings();
+
+      print('🟢 SDK からのレスポンス: ${offerings != null ? "null以外" : "null"}');
+      if (offerings != null) {
+        print('🟢 offerings.all: ${offerings.all.keys.toList()}');
+        print('🟢 offerings.current: ${offerings.current?.identifier ?? "null"}');
+        if (offerings.current != null) {
+          print('🟢 current.availablePackages: ${offerings.current!.availablePackages.length}');
+          print('🟢 current.monthly: ${offerings.current!.monthly?.identifier ?? "null"}');
+          print('🟢 current.annual: ${offerings.current!.annual?.identifier ?? "null"}');
+        }
+      }
+
+      return offerings;
+    } catch (e, stackTrace) {
+      print('🔴 RevenueCatService.getOfferings() エラー: $e');
+      print('🔴 StackTrace: $stackTrace');
       throw Exception('サブスクリプション商品の取得に失敗しました: ${e.toString()}');
     }
   }
