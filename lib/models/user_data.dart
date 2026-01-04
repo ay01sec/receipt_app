@@ -30,8 +30,12 @@ class UserData {
     return UserData(
       id: doc.id,
       email: data['email'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      createdAt: data['createdAt'] != null
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: data['updatedAt'] != null
+          ? (data['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
       subscriptionPlan: data['subscriptionPlan'],
       subscriptionStatus: data['subscriptionStatus'],
       subscriptionStartDate: data['subscriptionStartDate'] != null
