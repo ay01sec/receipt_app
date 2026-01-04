@@ -3,7 +3,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/revenue_cat_service.dart';
-import '../utils/constants.dart';
+import '../utils/constants.dart' show FirestoreCollections;
 
 /// サブスクリプション状態を取得するFutureProvider
 final subscriptionStatusProvider =
