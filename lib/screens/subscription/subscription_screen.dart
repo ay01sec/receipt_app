@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../providers/subscription_provider.dart';
 import '../../utils/constants.dart';
+import '../main_navigation.dart';
 
 /// サブスクリプション購入画面
 class SubscriptionScreen extends ConsumerStatefulWidget {
@@ -82,10 +83,20 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (!mounted) return;
 
       if (success) {
+        // 購入成功 - Firestore が更新されているので、メイン画面に遷移
+        if (widget.isRequired) {
+          // 強制表示の場合は、MainNavigation に置き換え
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainNavigation()),
+          );
+        } else {
+          // 任意表示の場合は、前の画面に戻る
+          Navigator.of(context).pop();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('購入が完了しました！')),
         );
-        Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('購入に失敗しました')),
@@ -109,10 +120,20 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (!mounted) return;
 
       if (success) {
+        // リストア成功 - Firestore が更新されているので、メイン画面に遷移
+        if (widget.isRequired) {
+          // 強制表示の場合は、MainNavigation に置き換え
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainNavigation()),
+          );
+        } else {
+          // 任意表示の場合は、前の画面に戻る
+          Navigator.of(context).pop();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('購入情報を復元しました')),
         );
-        Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('復元する購入情報が見つかりませんでした')),
