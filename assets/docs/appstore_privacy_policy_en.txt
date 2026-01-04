@@ -1,0 +1,148 @@
+Privacy Policy
+
+Last Updated: January 4, 2026
+
+This Privacy Policy describes how "Receipt App" (the "App") collects, uses, and protects your personal information.
+
+
+Article 1 (Service Provider Information)
+
+Service Name: Receipt App
+Operator: [Company Name]
+Address: [Company Address]
+Contact: Settings → Contact Us in the App
+
+
+Article 2 (Information We Collect)
+
+The App collects the following information to provide our services:
+
+1. User Registration Information
+   - Email address
+   - Password (encrypted and stored securely)
+   - User ID (automatically generated)
+
+2. Store Information
+   - Store name
+   - Store address
+   - Phone number
+   - Invoice registration number
+   - Stamp/seal image (optional)
+
+3. Receipt Data
+   - Receipt number
+   - Issue date
+   - Recipient name
+   - Amount information
+   - Memo/description
+   - QR code
+   - PDF file
+
+4. Subscription Information
+   - Plan type (monthly/yearly)
+   - Purchase date and time
+   - Expiration date
+   - Trial status
+
+
+Article 3 (Purpose of Use)
+
+We use the collected information for the following purposes:
+
+1. Providing and operating the Service
+2. Creating and managing receipts
+3. Generating and storing PDFs
+4. Managing subscriptions
+5. Providing user support
+6. Improving and developing the Service
+7. Preventing unauthorized use
+
+
+Article 4 (Third-Party Services)
+
+The App uses the following third-party services:
+
+1. Firebase (provided by Google LLC)
+   - Firebase Authentication: User authentication
+   - Cloud Firestore: Database
+   - Firebase Storage: File storage
+   - Privacy Policy: https://policies.google.com/privacy
+
+2. RevenueCat (provided by RevenueCat, Inc.)
+   - Subscription management
+   - Purchase information processing
+   - Privacy Policy: https://www.revenuecat.com/privacy
+
+3. Apple App Store (provided by Apple Inc.)
+   - In-app purchase processing
+   - Privacy Policy: https://www.apple.com/legal/privacy/
+
+
+Article 5 (Data Retention Period)
+
+1. User data: Until account deletion
+2. Receipt data: Until deleted by user (permanently deleted 90 days after soft deletion)
+3. Subscription information: Retained for 7 years in accordance with tax laws
+4. Log data: Maximum 90 days
+
+
+Article 6 (Information Sharing)
+
+We do not share collected information with third parties except in the following cases:
+
+1. With user consent
+2. As required by law
+3. When necessary to protect life, body, or property
+4. When providing to contractors to the extent necessary for service provision
+
+
+Article 7 (Security)
+
+We implement the following measures to prevent leakage, loss, or damage of collected information:
+
+1. Encrypted communication (TLS/SSL)
+2. Access control via Firebase Security Rules
+3. Password hashing
+4. Regular security audits
+
+
+Article 8 (User Rights)
+
+Users have the following rights:
+
+1. Right to access their information
+2. Right to request correction or update of information
+3. Right to request deletion of information (account deletion)
+4. Right to request restriction of information processing
+5. Right to data portability
+6. Right to object
+
+To exercise these rights, please contact us through Settings → Contact Us in the App.
+
+
+Article 9 (Cookies and Tracking Technologies)
+
+The App does not use cookies or other tracking technologies.
+
+
+Article 10 (Children's Privacy)
+
+The App is not intended for children under 13 years of age, and we do not knowingly collect personal information from children under 13.
+
+
+Article 11 (International Data Transfer)
+
+The App uses cloud services such as Firebase, so collected information may be stored on servers outside of Japan. These services comply with appropriate data protection standards.
+
+
+Article 12 (Changes to Privacy Policy)
+
+We may change this Privacy Policy as necessary. The revised Privacy Policy will become effective upon posting within the App.
+
+
+Article 13 (Contact)
+
+For inquiries regarding this Privacy Policy, please contact us through Settings → Contact Us in the App.
+
+
+Effective Date: January 4, 2026
