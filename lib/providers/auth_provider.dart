@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../repositories/auth_repository.dart';
+import '../models/user_data.dart';
+import '../utils/constants.dart';
 
 /// AuthRepositoryのプロバイダー
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -19,6 +22,33 @@ final currentUserProvider = Provider<User?>((ref) {
   final user = authRepository.currentUser;
   print('🔵 currentUserProvider: user = ${user?.uid ?? "null"}');
   return user;
+});
+
+/// 現在のユーザーのUserDataを取得するStreamProvider
+final userDataProvider = StreamProvider<UserData?>((ref) {
+  final authState = ref.watch(authStateProvider);
+
+  return authState.when(
+    data: (user) {
+      if (user == null) {
+        return Stream.value(null);
+      }
+
+      final firestore = FirebaseFirestore.instance;
+      return firestore
+          .collection(FirestoreCollections.users)
+          .doc(user.uid)
+          .snapshots()
+          .map((snapshot) {
+        if (!snapshot.exists) {
+          return null;
+        }
+        return UserData.fromFirestore(snapshot);
+      });
+    },
+    loading: () => Stream.value(null),
+    error: (_, __) => Stream.value(null),
+  );
 });
 
 /// 認証コントローラー（認証関連の操作を行う）

@@ -7,6 +7,7 @@ import 'utils/constants.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_navigation.dart';
+import 'screens/subscription/subscription_screen.dart';
 import 'services/revenue_cat_service.dart';
 
 void main() async {
@@ -117,8 +118,32 @@ class AuthWrapper extends ConsumerWidget {
     return authState.when(
       data: (user) {
         if (user != null) {
-          // ログイン済み - メインナビゲーションを表示
-          return const MainNavigation();
+          // ログイン済み - ユーザーデータをチェック
+          final userDataState = ref.watch(userDataProvider);
+
+          return userDataState.when(
+            data: (userData) {
+              if (userData == null) {
+                // ユーザーデータが見つからない場合はスプラッシュ表示
+                return const SplashScreen();
+              }
+
+              // トライアル期間が終了し、サブスクリプションもない場合
+              if (userData.shouldShowPaywall) {
+                // 課金画面を強制表示（戻るボタン無効）
+                return const SubscriptionScreen(isRequired: true);
+              }
+
+              // トライアル中 or サブスクリプション有効 - メインナビゲーション表示
+              return const MainNavigation();
+            },
+            loading: () => const SplashScreen(),
+            error: (error, stack) {
+              debugPrint('⚠️ UserData取得エラー: $error');
+              // エラー時もメインナビゲーションを表示
+              return const MainNavigation();
+            },
+          );
         } else {
           // 未ログイン - ログイン画面を表示
           return const LoginScreen();

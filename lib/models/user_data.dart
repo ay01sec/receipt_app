@@ -98,4 +98,30 @@ class UserData {
   bool get hasActiveSubscription {
     return isPremium;
   }
+
+  /// 無料トライアル期間中かどうかをチェック（3日間）
+  bool get isInTrial {
+    final now = DateTime.now();
+    final trialEndDate = createdAt.add(const Duration(days: 3));
+    return now.isBefore(trialEndDate);
+  }
+
+  /// トライアル残り日数を取得（0-3日）
+  int get trialDaysRemaining {
+    if (!isInTrial) return 0;
+    final now = DateTime.now();
+    final trialEndDate = createdAt.add(const Duration(days: 3));
+    final difference = trialEndDate.difference(now);
+    return difference.inDays + 1; // 当日も含めるため+1
+  }
+
+  /// アプリを使用可能かどうか（トライアル中 or サブスク有効）
+  bool get canUseApp {
+    return isInTrial || hasActiveSubscription;
+  }
+
+  /// 課金画面を表示すべきかどうか
+  bool get shouldShowPaywall {
+    return !isInTrial && !hasActiveSubscription;
+  }
 }

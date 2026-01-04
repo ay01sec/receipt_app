@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/store_provider.dart';
 import '../../utils/constants.dart';
 import '../../utils/validators.dart';
+import '../subscription/subscription_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -234,6 +235,57 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             _emailNotificationEnabled = value;
                           });
                         },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.paddingLarge),
+
+                  // プレミアムプラン
+                  Card(
+                    color: Colors.blue.shade50,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SubscriptionScreen(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(UIConstants.paddingMedium),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.workspace_premium,
+                              color: Colors.amber.shade700,
+                              size: 40,
+                            ),
+                            const SizedBox(width: UIConstants.paddingMedium),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'プレミアムプラン',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'すべての機能を使い放題',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
                       ),
                     ),
                   ),
