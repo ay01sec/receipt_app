@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'utils/constants.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_navigation.dart';
 import 'screens/subscription/subscription_screen.dart';
+import 'screens/tutorial/tutorial_screen.dart';
 import 'services/revenue_cat_service.dart';
 
 void main() async {
@@ -108,11 +110,51 @@ class MyApp extends ConsumerWidget {
 }
 
 /// 認証状態に応じて画面を切り替えるラッパー
-class AuthWrapper extends ConsumerWidget {
+class AuthWrapper extends ConsumerStatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends ConsumerState<AuthWrapper> {
+  bool _isFirstLaunch = true;
+  bool _isCheckingFirstLaunch = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstLaunch();
+  }
+
+  /// 初回起動かどうかをチェック
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenTutorial = prefs.getBool('has_seen_tutorial') ?? false;
+
+    setState(() {
+      _isFirstLaunch = !hasSeenTutorial;
+      _isCheckingFirstLaunch = false;
+    });
+  }
+
+  /// チュートリアル完了時の処理
+  Future<void> _onTutorialComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_seen_tutorial', true);
+
+    setState(() {
+      _isFirstLaunch = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 初回起動チェック中はスプラッシュ表示
+    if (_isCheckingFirstLaunch) {
+      return const SplashScreen();
+    }
+
     final authState = ref.watch(authStateProvider);
 
     return authState.when(
@@ -145,7 +187,14 @@ class AuthWrapper extends ConsumerWidget {
             },
           );
         } else {
-          // 未ログイン - ログイン画面を表示
+          // 未ログイン - 初回起動時はチュートリアル表示
+          if (_isFirstLaunch) {
+            return TutorialScreen(
+              onComplete: _onTutorialComplete,
+            );
+          }
+
+          // 2回目以降はログイン画面を表示
           return const LoginScreen();
         }
       },

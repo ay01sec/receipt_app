@@ -8,6 +8,7 @@ import '../../utils/constants.dart';
 import '../../utils/validators.dart';
 import '../subscription/subscription_screen.dart';
 import '../legal/legal_document_screen.dart';
+import '../tutorial/tutorial_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -370,6 +371,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
 
                   const SizedBox(height: UIConstants.paddingLarge),
+                  const Divider(),
+                  const SizedBox(height: UIConstants.paddingSmall),
+
+                  // ヘルプ・サポートセクション
+                  const Text(
+                    'ヘルプ・サポート',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.paddingSmall),
+
+                  // 使い方（チュートリアル）
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const TutorialScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.help_outline),
+                    label: const Text('使い方'),
+                  ),
+
+                  const SizedBox(height: UIConstants.paddingMedium),
                   const Divider(),
                   const SizedBox(height: UIConstants.paddingSmall),
 
