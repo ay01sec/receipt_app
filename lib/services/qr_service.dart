@@ -4,7 +4,16 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 /// QRコード生成サービス
 class QrService {
-  /// 領収書情報からQRコードデータを生成
+  /// 領収書PDF URLからQRコードデータを生成
+  ///
+  /// [pdfUrl] PDF URL（QRコードに埋め込むURL）
+  static String generateQrDataFromUrl({
+    required String pdfUrl,
+  }) {
+    return pdfUrl;
+  }
+
+  /// 領収書情報からQRコードデータを生成（後方互換性のため残す）
   ///
   /// [receiptId] 領収書ID
   /// [receiptNumber] 領収書番号
@@ -12,6 +21,7 @@ class QrService {
   /// [totalAmount] 税込金額
   /// [storeName] 店舗名
   /// [verifyUrl] 検証用URL（オプション）
+  @Deprecated('Use generateQrDataFromUrl instead')
   static String generateQrData({
     required String receiptId,
     required String receiptNumber,

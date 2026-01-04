@@ -63,19 +63,69 @@ class ReceiptRepository {
       final receiptId = docRef.id;
       print('🟢 ReceiptRepository: ReceiptID生成完了 - $receiptId');
 
-      // QRコードデータを生成（receiptIdを含める）
-      final qrCodeData = QrService.generateQrData(
-        receiptId: receiptId,
+      // 第1段階: QRコードなしでPDFを生成（仮）
+      print('🔵 ReceiptRepository: 第1段階PDF生成開始（QRコードなし）');
+      final tempPdfBytes = await PdfService.generateReceiptPdf(
         receiptNumber: receiptNumber,
         issueDate: issueDate,
+        recipientName: recipientName,
+        memo: memo,
         totalAmount: totalAmount,
+        subtotalAmount: subtotalAmount,
+        taxAmount: taxAmount,
+        taxRate: taxRate,
         storeName: store.storeName,
+        storeAddress: store.fullAddress,
+        phoneNumber: store.phoneNumber,
+        invoiceNumber: store.invoiceNumber.isNotEmpty ? store.invoiceNumber : null,
+        stampImageBytes: stampImageBytes,
+        qrCodeData: null, // 第1段階ではQRコードなし
       );
+      print('🟢 ReceiptRepository: 第1段階PDF生成完了 - ${tempPdfBytes.length} bytes');
+
+      // Firestoreにデータを保存（QRコードはまだ未設定）
+      print('🔵 ReceiptRepository: Firestore保存開始');
+      await docRef.set({
+        'receiptNumber': receiptNumber,
+        'status': ReceiptStatus.issued,
+        'issueDate': Timestamp.fromDate(issueDate),
+        'issueDateString': issueDateString,
+        'recipientName': recipientName,
+        'memo': memo,
+        'totalAmount': totalAmount,
+        'subtotalAmount': subtotalAmount,
+        'taxAmount': taxAmount,
+        'taxRate': taxRate,
+        'qrCodeData': '', // 第1段階では空
+        'pdfUrl': null,
+        'pdfStoragePath': null,
+        'createdAt': now,
+        'updatedAt': now,
+      });
+
+      print('🟢 ReceiptRepository: Firestore保存完了 - receiptId: ${docRef.id}');
+
+      // 第1段階PDFをCloud Storageにアップロード
+      final pdfStoragePath = StoragePaths.receiptPdfPath(store.userId, store.id, docRef.id);
+      print('🔵 ReceiptRepository: 第1段階Storageアップロード開始 - path: $pdfStoragePath');
+
+      final storageRef = _storage.ref().child(pdfStoragePath);
+      print('🔵 ReceiptRepository: StorageRef取得完了');
+
+      await storageRef.putData(tempPdfBytes);
+      print('🟢 ReceiptRepository: 第1段階PDF putData 完了');
+
+      final pdfUrl = await storageRef.getDownloadURL();
+      print('🟢 ReceiptRepository: DownloadURL取得完了 - url: $pdfUrl');
+
+      // 第2段階: PDF URLを使ってQRコード生成
+      print('🔵 ReceiptRepository: QRコード生成開始（PDF URL使用）');
+      final qrCodeData = QrService.generateQrDataFromUrl(pdfUrl: pdfUrl);
       print('🟢 ReceiptRepository: QRコード生成完了 - $qrCodeData');
 
-      // PDFを生成
-      print('🔵 ReceiptRepository: PDF生成開始');
-      final pdfBytes = await PdfService.generateReceiptPdf(
+      // 第2段階: QRコード付きPDFを再生成
+      print('🔵 ReceiptRepository: 第2段階PDF生成開始（QRコード付き）');
+      final finalPdfBytes = await PdfService.generateReceiptPdf(
         receiptNumber: receiptNumber,
         issueDate: issueDate,
         recipientName: recipientName,
@@ -91,51 +141,22 @@ class ReceiptRepository {
         stampImageBytes: stampImageBytes,
         qrCodeData: qrCodeData,
       );
-      print('🟢 ReceiptRepository: PDF生成完了 - ${pdfBytes.length} bytes');
+      print('🟢 ReceiptRepository: 第2段階PDF生成完了 - ${finalPdfBytes.length} bytes');
 
-      // Firestoreにデータを保存
-      print('🔵 ReceiptRepository: Firestore保存開始');
-      await docRef.set({
-        'receiptNumber': receiptNumber,
-        'status': ReceiptStatus.issued,
-        'issueDate': Timestamp.fromDate(issueDate),
-        'issueDateString': issueDateString,
-        'recipientName': recipientName,
-        'memo': memo,
-        'totalAmount': totalAmount,
-        'subtotalAmount': subtotalAmount,
-        'taxAmount': taxAmount,
-        'taxRate': taxRate,
-        'qrCodeData': qrCodeData,
-        'pdfUrl': null,
-        'pdfStoragePath': null,
-        'createdAt': now,
-        'updatedAt': now,
-      });
+      // 第2段階PDFをStorageに上書きアップロード
+      print('🔵 ReceiptRepository: 第2段階Storageアップロード開始（上書き）');
+      await storageRef.putData(finalPdfBytes);
+      print('🟢 ReceiptRepository: 第2段階PDF putData 完了');
 
-      print('🟢 ReceiptRepository: Firestore保存完了 - receiptId: ${docRef.id}');
-
-      // PDFをCloud Storageにアップロード
-      final pdfStoragePath = StoragePaths.receiptPdfPath(store.userId, store.id, docRef.id);
-      print('🔵 ReceiptRepository: Storageアップロード開始 - path: $pdfStoragePath');
-
-      final storageRef = _storage.ref().child(pdfStoragePath);
-      print('🔵 ReceiptRepository: StorageRef取得完了');
-
-      await storageRef.putData(pdfBytes);
-      print('🟢 ReceiptRepository: PDF putData 完了');
-
-      final pdfUrl = await storageRef.getDownloadURL();
-      print('🟢 ReceiptRepository: DownloadURL取得完了 - url: $pdfUrl');
-
-      // PDFのURLを更新
-      print('🔵 ReceiptRepository: Firestore PDF URL更新開始');
+      // FirestoreにPDF URLとQRコードデータを更新
+      print('🔵 ReceiptRepository: Firestore PDF URL & QRコード更新開始');
       await docRef.update({
         'pdfUrl': pdfUrl,
         'pdfStoragePath': pdfStoragePath,
+        'qrCodeData': qrCodeData,
         'updatedAt': Timestamp.now(),
       });
-      print('🟢 ReceiptRepository: Firestore PDF URL更新完了');
+      print('🟢 ReceiptRepository: Firestore更新完了');
 
       // 領収書番号をインクリメント（StoreRepositoryを経由せず直接更新）
       await _firestore

@@ -33,7 +33,7 @@ class PdfService {
   /// [phoneNumber] 電話番号
   /// [invoiceNumber] インボイス番号
   /// [stampImageBytes] 印鑑画像データ（オプション）
-  /// [qrCodeData] QRコードデータ
+  /// [qrCodeData] QRコードデータ（オプション、nullの場合はQRコードを表示しない）
   static Future<Uint8List> generateReceiptPdf({
     required String receiptNumber,
     required DateTime issueDate,
@@ -48,7 +48,7 @@ class PdfService {
     required String phoneNumber,
     String? invoiceNumber,
     Uint8List? stampImageBytes,
-    required String qrCodeData,
+    String? qrCodeData,
   }) async {
     final pdf = pw.Document();
     final font = await _loadFont();
@@ -272,6 +272,37 @@ class PdfService {
             ),
 
             pw.SizedBox(height: 10),
+
+            // 最下部：領収書番号とQRコード
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: pw.CrossAxisAlignment.end,
+              children: [
+                // 左側：領収書番号
+                pw.Text(
+                  '領収書番号: $receiptNumber',
+                  style: pw.TextStyle(font: font, fontSize: 9),
+                ),
+                // 右側：QRコード（存在する場合のみ）
+                if (qrCodeData != null && qrCodeData.isNotEmpty)
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                    children: [
+                      pw.BarcodeWidget(
+                        data: qrCodeData,
+                        barcode: pw.Barcode.qrCode(),
+                        width: 80,
+                        height: 80,
+                      ),
+                      pw.SizedBox(height: 2),
+                      pw.Text(
+                        'PDFダウンロード',
+                        style: pw.TextStyle(font: font, fontSize: 7),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ],
         ),
       ),
