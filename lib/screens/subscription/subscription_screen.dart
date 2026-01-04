@@ -4,6 +4,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../providers/subscription_provider.dart';
 import '../../utils/constants.dart';
 import '../main_navigation.dart';
+import '../legal/legal_document_screen.dart';
 
 /// サブスクリプション購入画面
 class SubscriptionScreen extends ConsumerStatefulWidget {
@@ -290,6 +291,86 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
                   ),
+            ),
+            const SizedBox(height: UIConstants.paddingMedium),
+
+            // 法的文書リンク
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LegalDocumentScreen(
+                          documentPath: 'assets/docs/privacy_policy_ja.md',
+                          title: 'プライバシーポリシー',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'プライバシーポリシー',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                Text(
+                  '|',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LegalDocumentScreen(
+                          documentPath: 'assets/docs/terms_of_service_ja.md',
+                          title: '利用規約',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    '利用規約',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                Text(
+                  '|',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const LegalDocumentScreen(
+                          documentPath: 'assets/docs/subscription_legal_ja.md',
+                          title: 'サブスクリプション規約',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'サブスクリプション規約',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

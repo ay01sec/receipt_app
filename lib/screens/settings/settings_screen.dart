@@ -7,6 +7,7 @@ import '../../providers/store_provider.dart';
 import '../../utils/constants.dart';
 import '../../utils/validators.dart';
 import '../subscription/subscription_screen.dart';
+import '../legal/legal_document_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -366,6 +367,69 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                     icon: const Icon(Icons.logout),
                     label: const Text('ログアウト'),
+                  ),
+
+                  const SizedBox(height: UIConstants.paddingLarge),
+                  const Divider(),
+                  const SizedBox(height: UIConstants.paddingSmall),
+
+                  // 法的文書セクション
+                  const Text(
+                    '法的文書',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.paddingSmall),
+
+                  // プライバシーポリシー
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LegalDocumentScreen(
+                            documentPath: 'assets/docs/privacy_policy_ja.md',
+                            title: 'プライバシーポリシー',
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.privacy_tip),
+                    label: const Text('プライバシーポリシー'),
+                  ),
+
+                  // 利用規約
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LegalDocumentScreen(
+                            documentPath: 'assets/docs/terms_of_service_ja.md',
+                            title: '利用規約',
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.description),
+                    label: const Text('利用規約'),
+                  ),
+
+                  // サブスクリプション規約
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LegalDocumentScreen(
+                            documentPath: 'assets/docs/subscription_legal_ja.md',
+                            title: 'サブスクリプション規約',
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.article),
+                    label: const Text('サブスクリプション規約'),
                   ),
                 ],
               ),
