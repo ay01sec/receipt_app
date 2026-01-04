@@ -33,7 +33,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
           '• 店舗名\n'
           '• 住所\n'
           '• 電話番号\n'
-          '• インボイス番号\n'
+          '• インボイス番号（オプション）\n'
           '• 店舗印鑑画像（オプション）\n\n'
           'これらの情報は領収書に自動的に印字されます。',
       icon: Icons.store,
@@ -65,8 +65,8 @@ class _TutorialScreenState extends State<TutorialScreen> {
       title: '4. プレミアムプラン',
       description: 'プレミアムプランで全機能をご利用いただけます。\n\n'
           '• 3日間無料トライアル\n'
-          '• 月額プラン: ¥500/月\n'
-          '• 年額プラン: ¥5,000/年（2ヶ月分お得）\n\n'
+          '• 月額プラン: ¥1,000/月\n'
+          '• 年額プラン: ¥10,000/年（2ヶ月分お得）\n\n'
           '設定画面の「プレミアムプラン」から登録できます。',
       icon: Icons.workspace_premium,
       iconColor: Colors.amber,

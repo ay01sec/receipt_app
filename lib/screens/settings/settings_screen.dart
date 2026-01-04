@@ -100,7 +100,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         invoiceNumber: _invoiceNumberController.text.trim(),
         defaultMemo: _defaultMemoController.text.trim(),
         stampImagePath: _selectedImagePath,
-        emailNotificationEnabled: _emailNotificationEnabled,
+        emailNotificationEnabled: false, // 次回アップデートで実装予定
       );
     }
 
@@ -216,31 +216,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const SizedBox(height: UIConstants.paddingLarge),
 
-                  // メール送信設定
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(UIConstants.paddingMedium),
-                      child: SwitchListTile(
-                        title: const Text(
-                          'PDF作成後のメール送信',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: const Text(
-                          'ONにすると、領収書PDF作成後に\nログイン用メールアドレス宛にPDFと詳細情報を送信します',
-                        ),
-                        value: _emailNotificationEnabled,
-                        onChanged: (bool value) {
-                          setState(() {
-                            _emailNotificationEnabled = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: UIConstants.paddingLarge),
+                  // メール送信設定（次回アップデートで実装予定）
+                  // TODO: SendGrid設定完了後に有効化
+                  // Card(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(UIConstants.paddingMedium),
+                  //     child: SwitchListTile(
+                  //       title: const Text(
+                  //         'PDF作成後のメール送信',
+                  //         style: TextStyle(
+                  //           fontSize: 16,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //       subtitle: const Text(
+                  //         'ONにすると、領収書PDF作成後に\nログイン用メールアドレス宛にPDFと詳細情報を送信します',
+                  //       ),
+                  //       value: _emailNotificationEnabled,
+                  //       onChanged: (bool value) {
+                  //         setState(() {
+                  //           _emailNotificationEnabled = value;
+                  //         });
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: UIConstants.paddingLarge),
 
                   // プレミアムプラン
                   Card(
