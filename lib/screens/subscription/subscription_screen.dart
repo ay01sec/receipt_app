@@ -38,14 +38,26 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     });
 
     try {
+      print('🔵 Offerings読み込み開始');
       final controller = ref.read(subscriptionControllerProvider.notifier);
       final offerings = await controller.getOfferings();
+
+      print('🟢 Offerings取得成功: ${offerings?.all}');
+      print('🟢 Current offering: ${offerings?.current?.identifier}');
+      print('🟢 Current offering packages: ${offerings?.current?.availablePackages.length}');
+
+      if (offerings?.current != null) {
+        print('🟢 Monthly package: ${offerings?.current?.monthly?.identifier}');
+        print('🟢 Annual package: ${offerings?.current?.annual?.identifier}');
+      }
 
       setState(() {
         _offerings = offerings;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('🔴 Offerings取得エラー: $e');
+      print('🔴 StackTrace: $stackTrace');
       setState(() {
         _errorMessage = 'プラン情報の取得に失敗しました: ${e.toString()}';
         _isLoading = false;
