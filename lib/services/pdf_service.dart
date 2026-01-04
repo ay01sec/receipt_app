@@ -271,7 +271,8 @@ class PdfService {
               ],
             ),
 
-            pw.SizedBox(height: 10),
+            // QRコードセクション前の余白
+            pw.SizedBox(height: 40),
 
             // 最下部：領収書番号とQRコード
             pw.Row(
