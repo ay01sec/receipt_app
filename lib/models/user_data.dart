@@ -103,19 +103,19 @@ class UserData {
     return isPremium;
   }
 
-  // /// 無料トライアル期間中かどうかをチェック（3日間）
-  // bool get isInTrial {
-  //   final now = DateTime.now();
-  //   final trialEndDate = createdAt.add(const Duration(days: 3));
-  //   return now.isBefore(trialEndDate);
-  // }
-
-  // テスト用: 3日間 → 30秒に変更
+  /// 無料トライアル期間中かどうかをチェック（3日間）
   bool get isInTrial {
     final now = DateTime.now();
-    final trialEndDate = createdAt.add(const Duration(seconds: 30)); // テスト用
+    final trialEndDate = createdAt.add(const Duration(days: 3));
     return now.isBefore(trialEndDate);
   }
+
+  // // テスト用: 3日間 → 30秒に変更
+  // bool get isInTrial {
+  //   final now = DateTime.now();
+  //   final trialEndDate = createdAt.add(const Duration(seconds: 30)); // テスト用
+  //   return now.isBefore(trialEndDate);
+  // }
   /// トライアル残り日数を取得（0-3日）
   int get trialDaysRemaining {
     if (!isInTrial) return 0;
