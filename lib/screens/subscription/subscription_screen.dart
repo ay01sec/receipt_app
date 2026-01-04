@@ -192,6 +192,15 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               onPressed: _loadOfferings,
               child: const Text('再読み込み'),
             ),
+            const SizedBox(height: UIConstants.paddingMedium),
+            // 戻るボタンを追加
+            TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('戻る'),
+            ),
           ],
         ),
       ),
@@ -202,8 +211,53 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   Widget _buildContent() {
     final currentOffering = _offerings?.current;
     if (currentOffering == null) {
-      return const Center(
-        child: Text('利用可能なプランがありません'),
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(UIConstants.paddingLarge),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.info_outline,
+                size: 64,
+                color: Colors.orange,
+              ),
+              const SizedBox(height: UIConstants.paddingLarge),
+              const Text(
+                '利用可能なプランがありません',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: UIConstants.paddingMedium),
+              Text(
+                'App Store Connectでサブスクリプションの設定が必要です。\n'
+                'または、ネットワーク接続を確認してください。',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: UIConstants.paddingLarge),
+              ElevatedButton(
+                onPressed: _loadOfferings,
+                child: const Text('再読み込み'),
+              ),
+              const SizedBox(height: UIConstants.paddingMedium),
+              // 戻るボタンを追加
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('戻る'),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
